@@ -18,7 +18,7 @@ import androidx.appcompat.widget.Toolbar
 //My todo list:
 //1. Hook up the app to Firebase
 //2. Set up Google Maps.
-
+//3. Register the app on Github
 
 
 
