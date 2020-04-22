@@ -3,23 +3,24 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
-    app:startDestination="@+id/nav_home">
+    app:startDestination="@+id/nav_currentdelivery">
 
     <fragment
-        android:id="@+id/nav_home"
-        android:name="com.rrdsolutions.paleodelightsrider.ui.home.HomeFragment"
-        android:label="@string/menu_home"
-        tools:layout="@layout/fragment_home" />
+        android:id="@+id/nav_currentdelivery"
+        android:name="com.rrdsolutions.paleodelightsrider.ui.currentdelivery.CurrentDeliveryFragment"
+        android:label="Current Delivery"
+        tools:layout="@layout/fragment_currentdelivery" />
 
     <fragment
-        android:id="@+id/nav_gallery"
-        android:name="com.rrdsolutions.paleodelightsrider.ui.gallery.GalleryFragment"
-        android:label="@string/menu_gallery"
-        tools:layout="@layout/fragment_gallery" />
+        android:id="@+id/nav_pendingdelivery"
+        android:name="com.rrdsolutions.paleodelightsrider.ui.pendingdelivery.PendingDeliveryFragment"
+        android:label="Pending Delivery"
+        tools:layout="@layout/fragment_pendingdelivery" />
 
     <fragment
-        android:id="@+id/nav_slideshow"
-        android:name="com.rrdsolutions.paleodelightsrider.ui.slideshow.SlideshowFragment"
-        android:label="@string/menu_slideshow"
-        tools:layout="@layout/fragment_slideshow" />
+        android:id="@+id/nav_logout"
+        android:name="com.rrdsolutions.paleodelightsrider.ui.logout.LogoutFragment"
+        android:label="Log out"
+        tools:layout="@layout/fragment_logout" />
+
 </navigation>
