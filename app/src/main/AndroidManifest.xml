@@ -28,7 +28,7 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyDOBelSygRLsScFP6fPNiL_xvtXQZZIbG8" />
         <activity
-            android:name=".LoginActivity"
+            android:name=".ui.login.LoginActivity"
             android:label="PaleoDelightsRider"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>

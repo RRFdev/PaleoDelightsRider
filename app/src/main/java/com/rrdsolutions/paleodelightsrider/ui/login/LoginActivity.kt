@@ -1,4 +1,4 @@
-package com.rrdsolutions.paleodelightsrider
+package com.rrdsolutions.paleodelightsrider.ui.login
 
 import android.annotation.SuppressLint
 import android.content.Intent
@@ -6,12 +6,14 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.widget.Toast
 import androidx.core.graphics.toColorInt
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.google.firebase.FirebaseApp
 import com.google.firebase.firestore.FirebaseFirestore
+import com.rrdsolutions.paleodelightsrider.MainActivity
+import com.rrdsolutions.paleodelightsrider.R
 import kotlinx.android.synthetic.main.activity_login.*
 
 class LoginActivity : AppCompatActivity() {
@@ -26,11 +28,15 @@ class LoginActivity : AppCompatActivity() {
         FirebaseApp.initializeApp(this)
         vm = ViewModelProvider(this).get(LoginViewModel::class.java)
 
+        vm.visibility.observe(this, Observer{
+            loadingscreen.visibility = vm.visibility.value as Int
+        })
+
         checkLogin()
 
         loginbutton.setOnClickListener{
 
-            loadingscreen.visibility = View.VISIBLE
+            vm.visibility.value = View.VISIBLE
 
             username = username_edt.text.toString()
             password = password_edt.text.toString()
@@ -42,7 +48,6 @@ class LoginActivity : AppCompatActivity() {
                         Log.d("_login", "login success")
                         status.text = "Login success"
                         status.setTextColor("#a4c639".toColorInt())
-
                         if (checkbox.isChecked) saveLogin()
                         toMainActivity()
                     }
@@ -50,19 +55,22 @@ class LoginActivity : AppCompatActivity() {
                         Log.d("_login", "password incorrect")
                         status.text = "Password incorrect"
                         status.setTextColor("#FF0000".toColorInt())
+                        vm.visibility.value = View.GONE
                     }
                     "username incorrect"->{
                         Log.d("_login", "username incorrect")
                         status.text = "Username incorrect"
                         status.setTextColor("#FF0000".toColorInt())
+                        vm.visibility.value = View.GONE
                     }
                     "login fail"->{
                         Log.d("_login", "login fail")
                         status.text = "Login failed"
                         status.setTextColor("#FF0000".toColorInt())
+                        vm.visibility.value = View.GONE
                     }
                 }
-                loadingscreen.visibility = View.GONE
+
             }
         }
 
@@ -93,30 +101,3 @@ class LoginActivity : AppCompatActivity() {
     }
 }
 
-class LoginViewModel: ViewModel(){
-    fun loginWith(username: String, password:String, callback:(String)-> Unit){
-        val db = FirebaseFirestore
-            .getInstance().collection("riders")
-
-        db.document(username).get()
-            .addOnSuccessListener{it->
-
-                if (it.exists()){
-                    val realpassword = it.data?.get("password") as String
-                    Log.d("_login", "realpassword = $realpassword")
-
-                    if (realpassword == password){
-                        callback("login success")
-                    }
-                    else{
-                        callback("password incorrect")
-                    }
-                }
-                else callback ("username incorrect")
-
-            }
-            .addOnFailureListener{
-                callback("login fail")
-            }
-    }
-}
