@@ -7,7 +7,6 @@ import androidx.lifecycle.ViewModel
 import com.google.firebase.firestore.FirebaseFirestore
 
 class LoginViewModel: ViewModel(){
-
     var visibility = MutableLiveData<Int>().apply{ value = View.GONE }
 
     fun loginWith(username: String, password:String, callback:(String)-> Unit){

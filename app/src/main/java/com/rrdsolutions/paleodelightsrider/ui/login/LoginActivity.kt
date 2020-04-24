@@ -29,7 +29,7 @@ class LoginActivity : AppCompatActivity() {
         vm = ViewModelProvider(this).get(LoginViewModel::class.java)
 
         vm.visibility.observe(this, Observer{
-            loadingscreen.visibility = vm.visibility.value as Int
+            loadingscreen.visibility = it
         })
 
         checkLogin()

@@ -56,4 +56,6 @@ dependencies {
 
     implementation 'com.google.firebase:firebase-firestore-ktx:21.4.2'
 
+    implementation 'com.alespero:expandable-cardview:0.8'
+
 }
