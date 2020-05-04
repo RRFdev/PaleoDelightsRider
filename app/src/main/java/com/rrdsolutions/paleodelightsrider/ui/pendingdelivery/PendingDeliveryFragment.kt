@@ -34,7 +34,7 @@ class PendingDeliveryFragment : Fragment() {
 
 
 
-        activity?.findViewById<ConstraintLayout>(R.id.loadingscreen)?.visibility = View.GONE
+        //activity?.findViewById<ConstraintLayout>(R.id.loadingscreen)?.visibility = View.GONE
     }
 
 }

@@ -19,8 +19,8 @@
 
     <fragment
         android:id="@+id/nav_logout"
-        android:name="com.rrdsolutions.paleodelightsrider.ui.logout.LogoutFragment"
+        android:name="com.rrdsolutions.paleodelightsrider.ui.log.logFragment"
         android:label="Log out"
-        tools:layout="@layout/fragment_logout" />
+        tools:layout="@layout/fragment_log" />
 
 </navigation>

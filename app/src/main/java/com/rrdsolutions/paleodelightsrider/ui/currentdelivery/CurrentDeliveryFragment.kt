@@ -22,16 +22,27 @@ class CurrentDeliveryFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_currentdelivery_layout, container, false)
+        return inflater.inflate(R.layout.fragment_currentdelivery, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         vm = ViewModelProvider(this).get(CurrentDeliveryViewModel::class.java)
 
+        //run firebase Query
+        //if query returns no else, load up notificationcard.
+        //else load up fragment_currentdelivery_layout
 
+        vm.queryFirebase(){ currentDeliveryExists->
+            if (currentDeliveryExists){
+                loadCurrentDelivery()
+            }
+            else loadNoDelivery()
+        }
     }
 
+    fun loadCurrentDelivery(){}
 
+    fun loadNoDelivery(){}
 
 }
