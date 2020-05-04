@@ -3,9 +3,9 @@ package com.rrdsolutions.paleodelightsrider
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
+import android.view.MenuItem
 import android.view.View
-import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.android.material.snackbar.Snackbar
+import android.widget.TextView
 import com.google.android.material.navigation.NavigationView
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
@@ -15,9 +15,11 @@ import androidx.navigation.ui.setupWithNavController
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.Fragment
+import com.google.firebase.FirebaseApp
+import com.rrdsolutions.paleodelightsrider.ui.currentdelivery.CurrentDeliveryFragment
+import com.rrdsolutions.paleodelightsrider.ui.log.LogFragment
+import com.rrdsolutions.paleodelightsrider.ui.pendingdelivery.PendingDeliveryFragment
 
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -32,6 +34,8 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
         loadingscreenmain.visibility = View.GONE
 
+        FirebaseApp.initializeApp(this)
+
         val drawerLayout: DrawerLayout = findViewById(R.id.drawer)
         val navView: NavigationView = findViewById(R.id.nav_view)
         val navController = findNavController(R.id.nav_host_fragment)
@@ -40,6 +44,17 @@ class MainActivity : AppCompatActivity() {
                 R.id.nav_currentdelivery, R.id.nav_pendingdelivery, R.id.nav_logout), drawerLayout)
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
+
+        navView.getHeaderView(0).findViewById<TextView>(R.id.logouttext)
+            .setOnClickListener{
+            //Log.d("_main", "clicked")
+                logout()
+        }
+
+        navView.menu.findItem(R.id.nav_logout).isVisible = false
+
+
+
 
     }
 
@@ -53,15 +68,9 @@ class MainActivity : AppCompatActivity() {
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
     }
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        //outState.putInt("visibility", visibility)
-    }
+    fun logout(){
 
-    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
-        super.onRestoreInstanceState(savedInstanceState)
-        //visibility = savedInstanceState.getInt("visibility")
     }
-
 
 }
+

@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.widget.Toolbar
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
@@ -22,6 +23,7 @@ class CurrentDeliveryFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        activity?.findViewById<Toolbar>(R.id.toolbar)?.title = "Current Delivery"
         return inflater.inflate(R.layout.fragment_currentdelivery, container, false)
     }
 
@@ -33,7 +35,7 @@ class CurrentDeliveryFragment : Fragment() {
         //if query returns no else, load up notificationcard.
         //else load up fragment_currentdelivery_layout
 
-        vm.queryFirebase(){ currentDeliveryExists->
+        vm.queryFirebase("123"){ currentDeliveryExists->
             if (currentDeliveryExists){
                 loadCurrentDelivery()
             }
