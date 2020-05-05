@@ -30,7 +30,7 @@ class CurrentDeliveryFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         vm = ViewModelProvider(this).get(CurrentDeliveryViewModel::class.java)
-
+        Log.d("_TEST", "in CD")
         //run firebase Query
         //if query returns no else, load up notificationcard.
         //else load up fragment_currentdelivery_layout
@@ -41,6 +41,8 @@ class CurrentDeliveryFragment : Fragment() {
             }
             else loadNoDelivery()
         }
+
+        activity?.findViewById<ConstraintLayout>(R.id.loadingscreenmain)?.visibility = View.GONE
     }
 
     fun loadCurrentDelivery(){}

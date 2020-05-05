@@ -1,5 +1,7 @@
 package com.rrdsolutions.paleodelightsrider
 
+import android.app.FragmentTransaction
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
@@ -16,9 +18,11 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
 import com.google.firebase.FirebaseApp
 import com.rrdsolutions.paleodelightsrider.ui.currentdelivery.CurrentDeliveryFragment
 import com.rrdsolutions.paleodelightsrider.ui.log.LogFragment
+import com.rrdsolutions.paleodelightsrider.ui.login.LoginActivity
 import com.rrdsolutions.paleodelightsrider.ui.pendingdelivery.PendingDeliveryFragment
 
 import kotlinx.android.synthetic.main.activity_main.*
@@ -33,7 +37,7 @@ class MainActivity : AppCompatActivity() {
         val toolbar: Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
         loadingscreenmain.visibility = View.GONE
-
+        Log.d("_TEST", "in main")
         FirebaseApp.initializeApp(this)
 
         val drawerLayout: DrawerLayout = findViewById(R.id.drawer)
@@ -47,7 +51,7 @@ class MainActivity : AppCompatActivity() {
 
         navView.getHeaderView(0).findViewById<TextView>(R.id.logouttext)
             .setOnClickListener{
-            //Log.d("_main", "clicked")
+            Log.d("_main", "clicked")
                 logout()
         }
 
@@ -69,8 +73,23 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun logout(){
+        getPreferences(0).edit().putString("username", "").apply()
+        getPreferences(0).edit().putString("password", "").apply()
 
+        val intent = Intent(this, LoginActivity::class.java)
+        startActivity(intent)
+        Log.d("_main", "moving to LoginActivity")
     }
 
+    override fun onBackPressed() {
+        super.onBackPressed()
+
+        val a = Intent(Intent.ACTION_MAIN)
+        a.addCategory(Intent.CATEGORY_HOME)
+        a.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        this.startActivity(a)
+    }
 }
+
+
 

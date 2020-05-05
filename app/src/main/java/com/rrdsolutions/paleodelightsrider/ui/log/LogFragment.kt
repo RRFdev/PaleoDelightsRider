@@ -111,7 +111,7 @@ class LogFragment : Fragment() {
         val fm = fragmentManager
         fm?.beginTransaction()
             ?.replace(R.id.nav_host_fragment, frag)
-            ?.addToBackStack(null)
+            //?.addToBackStack(null)
             ?.commit()
 
         vm.visibility.value = View.GONE
