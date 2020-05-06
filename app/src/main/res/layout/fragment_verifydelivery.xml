@@ -11,6 +11,7 @@
         android:id="@+id/cardView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        app:cardElevation="16dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -30,7 +31,7 @@
                 app:layout_constraintStart_toStartOf="parent">
 
                 <TextView
-                    android:id="@+id/deliveryname"
+                    android:id="@+id/number"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:gravity="center|left"
@@ -41,7 +42,7 @@
                     app:layout_constraintTop_toTopOf="@+id/imageView2" />
 
                 <ImageView
-                    android:id="@+id/expandbtn"
+                    android:id="@+id/expandimage"
                     android:layout_width="40dp"
                     android:layout_height="0dp"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -64,20 +65,7 @@
                     android:id="@+id/menuitemsholder"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:id="@+id/textView2"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:padding="16dp"
-                        android:text="Chicken Curry Soup with Promegranate x 1"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/constraintLayout" />
-
-
-                </LinearLayout>
+                    android:orientation="vertical" />
 
                 <View
                     android:id="@+id/divider"
@@ -129,7 +117,7 @@
         tools:layout_editor_absoluteX="0dp">
 
         <com.google.android.gms.maps.MapView
-            android:id="@+id/map"
+            android:id="@+id/vmap"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
@@ -137,8 +125,10 @@
             android:id="@+id/errorlayout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:background="@android:color/tertiary_text_light"
             android:orientation="vertical"
-            android:visibility="gone">
+            android:visibility="gone"
+            tools:visibility="visible">
 
             <androidx.cardview.widget.CardView
 
@@ -165,6 +155,7 @@
         android:id="@+id/buttonlayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:elevation="16dp"
         android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

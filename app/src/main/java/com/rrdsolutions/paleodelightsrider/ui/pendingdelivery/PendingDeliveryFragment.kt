@@ -11,7 +11,9 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.lifecycle.ViewModelProvider
 import com.rrdsolutions.paleodelightsrider.OrderModel
 import com.rrdsolutions.paleodelightsrider.R
+import com.rrdsolutions.paleodelightsrider.ui.currentdelivery.CurrentDeliveryFragment
 import com.rrdsolutions.paleodelightsrider.ui.currentdelivery.CurrentDeliveryViewModel
+import com.rrdsolutions.paleodelightsrider.ui.verifydelivery.VerifyDeliveryFragment
 import kotlinx.android.synthetic.main.fragment_currentdelivery.*
 import kotlinx.android.synthetic.main.fragment_currentdelivery.layout
 import kotlinx.android.synthetic.main.fragment_pendingdelivery.*
@@ -69,7 +71,7 @@ class PendingDeliveryFragment : Fragment() {
             ordercard.time.text = OrderModel.pendingorderlist[i].time
 
             ordercard.setOnClickListener{
-                moveToVerifyAddress(OrderModel.pendingorderlist[i])
+                moveToVerifyDelivery(i)
             }
             layout.addView(ordercard)
         }
@@ -82,8 +84,16 @@ class PendingDeliveryFragment : Fragment() {
         layout.addView(notificationcard)
     }
 
-    fun moveToVerifyAddress(order: OrderModel.Order){
+    fun moveToVerifyDelivery(i:Int){
+        val frag = VerifyDeliveryFragment().apply{
+            arguments?.putInt("index", i)
+        }
 
+        val fm = fragmentManager
+        fm?.beginTransaction()
+            ?.replace(R.id.nav_host_fragment, frag)
+            ?.addToBackStack(null)
+            ?.commit()
     }
 
 }
