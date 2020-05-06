@@ -88,6 +88,7 @@ class PendingDeliveryFragment : Fragment() {
         val frag = VerifyDeliveryFragment().apply{
             arguments?.putInt("index", i)
         }
+        activity?.getPreferences(0)?.edit()?.putInt("index", i)?.apply()
 
         val fm = fragmentManager
         fm?.beginTransaction()
