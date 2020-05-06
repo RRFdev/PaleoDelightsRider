@@ -1,5 +1,6 @@
 package com.rrdsolutions.paleodelightsrider.ui.currentdelivery
 
+import android.annotation.SuppressLint
 import androidx.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.util.Log
@@ -15,9 +16,12 @@ import com.rrdsolutions.paleodelightsrider.MainActivity
 import com.rrdsolutions.paleodelightsrider.MainViewModel
 import com.rrdsolutions.paleodelightsrider.R
 import kotlinx.android.synthetic.main.fragment_currentdelivery.*
+import kotlinx.android.synthetic.main.notificationcard.view.*
 
 class CurrentDeliveryFragment : Fragment() {
+
     private lateinit var vm: CurrentDeliveryViewModel
+    //private lateinit var username: String
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -30,23 +34,36 @@ class CurrentDeliveryFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         vm = ViewModelProvider(this).get(CurrentDeliveryViewModel::class.java)
-        Log.d("_TEST", "in CD")
-        //run firebase Query
-        //if query returns no else, load up notificationcard.
-        //else load up fragment_currentdelivery_layout
 
-        vm.queryFirebase("123"){ currentDeliveryExists->
-            if (currentDeliveryExists){
-                loadCurrentDelivery()
+        vm.username = activity?.intent?.getStringExtra("username") as String
+        Log.d("_currentdelivery", "username = $vm.username")
+
+    }
+
+    override fun onResume(){
+        super.onResume()
+
+        vm.queryRider(){ callback->
+
+            when (callback){
+                "Delivery Present"->loadCurrentDelivery()
+                "No Delivery"->loadNoDelivery("No deliveries at the moment")
+                "No Connection"->loadNoDelivery("ERROR: Unable to reach database. Please check your online connection")
             }
-            else loadNoDelivery()
+            activity?.findViewById<ConstraintLayout>(R.id.loadingscreenmain)?.visibility = View.GONE
+
         }
 
-        activity?.findViewById<ConstraintLayout>(R.id.loadingscreenmain)?.visibility = View.GONE
     }
 
     fun loadCurrentDelivery(){}
 
-    fun loadNoDelivery(){}
+    @SuppressLint("SetTextI18n")
+    fun loadNoDelivery(text:String){
+
+        val notificationcard = layoutInflater.inflate(R.layout.notificationcard, null)
+        notificationcard.notificationtext.text = text
+        layout.addView(notificationcard)
+    }
 
 }

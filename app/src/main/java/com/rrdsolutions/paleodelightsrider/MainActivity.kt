@@ -45,7 +45,7 @@ class MainActivity : AppCompatActivity() {
         val navController = findNavController(R.id.nav_host_fragment)
 
         appBarConfiguration = AppBarConfiguration(setOf(
-                R.id.nav_currentdelivery, R.id.nav_pendingdelivery, R.id.nav_logout), drawerLayout)
+                R.id.nav_currentdelivery, R.id.nav_pendingdelivery), drawerLayout)
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
 
@@ -55,7 +55,7 @@ class MainActivity : AppCompatActivity() {
                 logout()
         }
 
-        navView.menu.findItem(R.id.nav_logout).isVisible = false
+        //navView.menu.findItem(R.id.nav_logout).isVisible = false
 
 
 
