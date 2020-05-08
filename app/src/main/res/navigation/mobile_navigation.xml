@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
-    app:startDestination="@+id/nav_currentdelivery">
+    app:startDestination="@+id/nav_logout">
 
     <fragment
         android:id="@+id/nav_currentdelivery"
@@ -17,4 +17,15 @@
         android:label="Pending Delivery"
         tools:layout="@layout/fragment_pendingdelivery" />
 
+    <fragment
+        android:id="@+id/nav_logout"
+        android:name="com.rrdsolutions.paleodelightsrider.ui.log.LogFragment"
+        android:label="Log out"
+        tools:layout="@layout/fragment_log" />
+
+    <fragment
+        android:id="@+id/nav_verifydelivery"
+        android:name="com.rrdsolutions.paleodelightsrider.ui.verifydelivery.VerifyDeliveryFragment"
+        android:label="Log out"
+        tools:layout="@layout/fragment_verifydelivery" />
 </navigation>

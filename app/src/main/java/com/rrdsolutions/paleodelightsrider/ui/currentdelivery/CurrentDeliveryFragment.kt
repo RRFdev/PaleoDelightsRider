@@ -15,6 +15,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.rrdsolutions.paleodelightsrider.MainActivity
 import com.rrdsolutions.paleodelightsrider.MainViewModel
 import com.rrdsolutions.paleodelightsrider.R
+import com.rrdsolutions.paleodelightsrider.ui.log.Login
 import kotlinx.android.synthetic.main.fragment_currentdelivery.*
 import kotlinx.android.synthetic.main.notificationcard.view.*
 
@@ -28,6 +29,8 @@ class CurrentDeliveryFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         activity?.findViewById<Toolbar>(R.id.toolbar)?.title = "Current Delivery"
+
+
         return inflater.inflate(R.layout.fragment_currentdelivery, container, false)
     }
 
@@ -35,7 +38,10 @@ class CurrentDeliveryFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         vm = ViewModelProvider(this).get(CurrentDeliveryViewModel::class.java)
 
-        vm.username = activity?.intent?.getStringExtra("username") as String
+        //vm.username = activity?.intent?.getStringExtra("username") as String
+        //vm.username = arguments?.getString("username")!!
+        //vm.username = MainActivity().username
+        vm.username = Login.username
         Log.d("_currentdelivery", "username = $vm.username")
 
     }

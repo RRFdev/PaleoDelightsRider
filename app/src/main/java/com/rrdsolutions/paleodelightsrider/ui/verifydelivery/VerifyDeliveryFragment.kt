@@ -24,6 +24,7 @@ import com.rrdsolutions.paleodelightsrider.R
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.rrdsolutions.paleodelightsrider.OrderModel
+import com.rrdsolutions.paleodelightsrider.ui.pendingdelivery.ViewHolder
 import kotlinx.android.synthetic.main.fragment_verifydelivery.*
 import kotlinx.android.synthetic.main.menuitemstext.view.*
 
@@ -34,6 +35,14 @@ class VerifyDeliveryFragment : Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         activity?.findViewById<Toolbar>(R.id.toolbar)?.title = "Verify Delivery"
+
+        val root = activity?.layoutInflater?.inflate(R.layout.fragment_pendingdelivery2, container, false)
+        activity?.getPreferences(0)?.edit()?.putBoolean("back", true)?.apply()
+        if (root != null) {
+            ViewHolder.view = root
+        }
+
+
         return inflater.inflate(R.layout.fragment_verifydelivery, container, false)
     }
 
