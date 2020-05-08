@@ -1,7 +1,6 @@
 package com.rrdsolutions.paleodelightsrider.ui.currentdelivery
 
 import android.annotation.SuppressLint
-import androidx.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -10,10 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.Toolbar
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
-import com.rrdsolutions.paleodelightsrider.MainActivity
-import com.rrdsolutions.paleodelightsrider.MainViewModel
 import com.rrdsolutions.paleodelightsrider.R
 import com.rrdsolutions.paleodelightsrider.ui.log.Login
 import kotlinx.android.synthetic.main.fragment_currentdelivery.*
@@ -28,7 +24,7 @@ class CurrentDeliveryFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        activity?.findViewById<Toolbar>(R.id.toolbar)?.title = "Current Delivery"
+        activity?.findViewById<Toolbar>(R.id.toolbarmain)?.title = "Current Delivery"
 
 
         return inflater.inflate(R.layout.fragment_currentdelivery, container, false)

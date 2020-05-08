@@ -141,8 +141,9 @@ class LogFragment : Fragment() {
 
 
 
-        view?.let { findNavController(it).navigate(R.id.nav_currentdelivery) }
-        //Fragment.findNavController().navigate(R.id.nav_currentdelivery)
+        view?.let { findNavController(it)
+            .navigate(R.id.nav_currentdelivery)
+        }
 
         vm.visibility.value = View.GONE
           hideDrawer(false)

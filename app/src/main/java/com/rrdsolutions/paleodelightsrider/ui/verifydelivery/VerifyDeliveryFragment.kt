@@ -34,7 +34,7 @@ class VerifyDeliveryFragment : Fragment() {
     lateinit var coordinate: LatLng
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        activity?.findViewById<Toolbar>(R.id.toolbar)?.title = "Verify Delivery"
+        activity?.findViewById<Toolbar>(R.id.toolbarmain)?.title = "Verify Delivery"
 
         val root = activity?.layoutInflater?.inflate(R.layout.fragment_pendingdelivery2, container, false)
         activity?.getPreferences(0)?.edit()?.putBoolean("back", true)?.apply()
