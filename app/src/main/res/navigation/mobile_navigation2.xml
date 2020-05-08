@@ -9,34 +9,19 @@
         android:id="@+id/nav_currentdelivery"
         android:name="com.rrdsolutions.paleodelightsrider.ui.currentdelivery.CurrentDeliveryFragment"
         android:label="Current Delivery"
-        tools:layout="@layout/fragment_currentdelivery" >
-
-        <action
-            android:id="@+id/action_nav_currentdelivery_to_nav_pendingdelivery"
-            app:destination="@id/nav_pendingdelivery" />
-    </fragment>
+        tools:layout="@layout/fragment_currentdelivery" />
 
     <fragment
         android:id="@+id/nav_pendingdelivery"
         android:name="com.rrdsolutions.paleodelightsrider.ui.pendingdelivery.PendingDeliveryFragment"
         android:label="Pending Delivery"
-        tools:layout="@layout/fragment_pendingdelivery" >
-        <action
-            android:id="@+id/action_nav_pendingdelivery_to_nav_verifydelivery"
-            app:destination="@id/nav_verifydelivery" />
-    </fragment>
+        tools:layout="@layout/fragment_pendingdelivery" />
 
     <fragment
         android:id="@+id/nav_logout"
         android:name="com.rrdsolutions.paleodelightsrider.ui.log.LogFragment"
         android:label="Log out"
-        tools:layout="@layout/fragment_log">
-        <action
-            android:id="@+id/action_login"
-            app:destination="@id/nav_currentdelivery"
-            app:enterAnim="@anim/nav_default_enter_anim"
-            app:popUpToInclusive="true" />
-    </fragment>
+        tools:layout="@layout/fragment_log"/>
 
 
     <!--            app:popUpTo=""-->
@@ -45,9 +30,5 @@
         android:id="@+id/nav_verifydelivery"
         android:name="com.rrdsolutions.paleodelightsrider.ui.verifydelivery.VerifyDeliveryFragment"
         android:label="Log out"
-        tools:layout="@layout/fragment_verifydelivery" >
-        <action
-            android:id="@+id/action_nav_verifydelivery_to_nav_currentdelivery"
-            app:destination="@id/nav_currentdelivery" />
-    </fragment>
+        tools:layout="@layout/fragment_verifydelivery" />
 </navigation>

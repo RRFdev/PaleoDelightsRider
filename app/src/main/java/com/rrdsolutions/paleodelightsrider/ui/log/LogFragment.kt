@@ -142,7 +142,7 @@ class LogFragment : Fragment() {
 
 
         view?.let { findNavController(it)
-            .navigate(R.id.nav_currentdelivery)
+            .navigate(R.id.action_login)
         }
 
         vm.visibility.value = View.GONE
