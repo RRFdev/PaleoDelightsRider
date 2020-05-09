@@ -12,7 +12,6 @@ import androidx.navigation.Navigation
 import com.rrdsolutions.paleodelightsrider.OrderModel
 import com.rrdsolutions.paleodelightsrider.R
 import kotlinx.android.synthetic.main.fragment_currentdelivery.layout
-import kotlinx.android.synthetic.main.fragment_pendingdelivery2.*
 import kotlinx.android.synthetic.main.notificationcard.view.*
 import kotlinx.android.synthetic.main.ordercard.view.*
 
@@ -26,26 +25,16 @@ class PendingDeliveryFragment : Fragment() {
     ): View? {
         vm = ViewModelProvider(this).get(PendingDeliveryViewModel::class.java)
         activity?.findViewById<Toolbar>(R.id.toolbarmain)?.title = "Pending Delivery"
-        if (activity?.getPreferences(0)?.getBoolean("back", false ) == true){
-            val root = ViewHolder.view
-            activity?.getPreferences(0)?.edit()?.putBoolean("back", false)?.apply()
+
+            val root = activity?.layoutInflater?.inflate(R.layout.fragment_pendingdelivery, container, false)
             return root
-        }
-        else{
-            val root = activity?.layoutInflater?.inflate(R.layout.fragment_pendingdelivery2, container, false)
-            return root
-        }
+
 
 
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        testbutton.setOnClickListener{
-            moveToVerifyDelivery(0)
-        }
-
 
         if (isAdded && activity != null){
             vm.queryPendingDelivery{ callback->
@@ -54,7 +43,7 @@ class PendingDeliveryFragment : Fragment() {
                     "No Delivery"->loadNoDelivery("No deliveries at the moment")
                     "No Connection"->loadNoDelivery("ERROR: Unable to reach database. Please check your online connection")
                 }
-                activity?.findViewById<ConstraintLayout>(R.id.loadingscreen)?.visibility = View.GONE
+
             }
 
         }
@@ -84,6 +73,7 @@ class PendingDeliveryFragment : Fragment() {
 
             layout.addView(ordercard)
         }
+        activity?.findViewById<ConstraintLayout>(R.id.loadingscreen)?.visibility = View.GONE
 
     }
 
@@ -91,33 +81,17 @@ class PendingDeliveryFragment : Fragment() {
         val notificationcard = getActivity()?.layoutInflater?.inflate(R.layout.notificationcard, null)
         notificationcard?.notificationtext?.text = text
         layout.addView(notificationcard)
+
+        activity?.findViewById<ConstraintLayout>(R.id.loadingscreen)?.visibility = View.GONE
+
     }
 
     fun moveToVerifyDelivery(i:Int){
 
         activity?.getPreferences(0)?.edit()?.putInt("index", i)?.apply()
 
-//        val fm = fragmentManager
-//        fm?.beginTransaction()
-//
-//            //?.add(PendingDeliveryFragment(),"")
-//            //?.remove(VerifyDeliveryFragment())
-////            ?.replace(R.id.nav_host_fragment, VerifyDeliveryFragment())
-////            ?.remove(CurrentDeliveryFragment())
-//            ?.remove(CurrentDeliveryFragment())
-//            ?.remove(PendingDeliveryFragment())
-//            ?.add(VerifyDeliveryFragment(),"")
-//
-//
-//            //?.addToBackStack(null)
-//            ?.commit()
-
         view?.let { Navigation.findNavController(it).navigate(R.id.nav_verifydelivery) }
 
     }
 
-}
-
-object ViewHolder{
-    lateinit var view:View
 }

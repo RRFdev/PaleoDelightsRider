@@ -11,7 +11,7 @@ import androidx.appcompat.widget.Toolbar
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.lifecycle.ViewModelProvider
 import com.rrdsolutions.paleodelightsrider.R
-import com.rrdsolutions.paleodelightsrider.ui.log.Login
+
 import kotlinx.android.synthetic.main.fragment_currentdelivery.*
 import kotlinx.android.synthetic.main.notificationcard.view.*
 
@@ -34,13 +34,20 @@ class CurrentDeliveryFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         vm = ViewModelProvider(this).get(CurrentDeliveryViewModel::class.java)
 
-        //vm.username = activity?.intent?.getStringExtra("username") as String
+        vm.username = activity?.intent?.getStringExtra("username") as String
         //vm.username = arguments?.getString("username")!!
         //vm.username = MainActivity().username
-        vm.username = Login.username
+        //vm.username = Login.username
         Log.d("_currentdelivery", "username = $vm.username")
 
     }
+
+    override fun onPause(){
+        layout.removeAllViews()
+        super.onPause()
+    }
+
+
 
     override fun onResume(){
         super.onResume()
@@ -52,13 +59,15 @@ class CurrentDeliveryFragment : Fragment() {
                 "No Delivery"->loadNoDelivery("No deliveries at the moment")
                 "No Connection"->loadNoDelivery("ERROR: Unable to reach database. Please check your online connection")
             }
-            activity?.findViewById<ConstraintLayout>(R.id.loadingscreenmain)?.visibility = View.GONE
+
 
         }
 
     }
 
-    fun loadCurrentDelivery(){}
+    fun loadCurrentDelivery(){
+        activity?.findViewById<ConstraintLayout>(R.id.loadingscreenmain)?.visibility = View.GONE
+    }
 
     @SuppressLint("SetTextI18n")
     fun loadNoDelivery(text:String){
@@ -66,6 +75,7 @@ class CurrentDeliveryFragment : Fragment() {
         val notificationcard = layoutInflater.inflate(R.layout.notificationcard, null)
         notificationcard.notificationtext.text = text
         layout.addView(notificationcard)
+        activity?.findViewById<ConstraintLayout>(R.id.loadingscreenmain)?.visibility = View.GONE
     }
 
 }

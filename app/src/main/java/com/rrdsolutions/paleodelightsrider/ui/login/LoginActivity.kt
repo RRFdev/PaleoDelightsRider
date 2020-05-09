@@ -30,13 +30,6 @@ class LoginActivity : AppCompatActivity() {
 
         Log.d("_TEST", "in Login")
 
-
-//        vm.visibility.observe(this, Observer{
-//            loadingscreen.visibility = it
-//        })
-//
-//        checkLogin()
-
         loginbutton.setOnClickListener{
 
             vm.visibility.value = View.VISIBLE
@@ -96,6 +89,7 @@ class LoginActivity : AppCompatActivity() {
         val a = Intent(Intent.ACTION_MAIN)
         a.addCategory(Intent.CATEGORY_HOME)
         a.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        //a.flags= Intent.FLAG_ACTIVITY_CLEAR_TOP
         this.startActivity(a)
     }
 
