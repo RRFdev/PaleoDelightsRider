@@ -22,7 +22,7 @@
         android:label="Pending Delivery"
         tools:layout="@layout/fragment_pendingdelivery" >
         <action
-            android:id="@+id/action_nav_pendingdelivery_to_nav_verifydelivery"
+            android:id="@+id/action_verify"
             app:destination="@id/nav_verifydelivery" />
     </fragment>
 
@@ -35,6 +35,7 @@
             android:id="@+id/action_login"
             app:destination="@id/nav_currentdelivery"
             app:enterAnim="@anim/nav_default_enter_anim"
+            app:popUpTo="@id/nav_logout"
             app:popUpToInclusive="true" />
     </fragment>
 
@@ -47,7 +48,9 @@
         android:label="Log out"
         tools:layout="@layout/fragment_verifydelivery" >
         <action
-            android:id="@+id/action_nav_verifydelivery_to_nav_currentdelivery"
-            app:destination="@id/nav_currentdelivery" />
+            android:id="@+id/action_pickup"
+            app:destination="@id/nav_currentdelivery"
+            app:popUpTo="@id/nav_verifydelivery"
+            app:popUpToInclusive="true" />
     </fragment>
 </navigation>
