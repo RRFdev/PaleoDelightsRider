@@ -23,6 +23,8 @@ import com.google.android.gms.maps.model.MarkerOptions
 import com.rrdsolutions.paleodelightsrider.R
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ktx.getField
 import com.rrdsolutions.paleodelightsrider.OrderModel
 
 import kotlinx.android.synthetic.main.fragment_verifydelivery.*
@@ -168,9 +170,39 @@ class VerifyDeliveryFragment : Fragment() {
         startActivity(callIntent)
     }
 
-    fun pickupDelivery(i:Int){}
+    fun pickupDelivery(i:Int){
 
-    fun moveToCurrentDelivery(){}
+        val number = OrderModel.pendingorderlist[i].number
+        val username = activity?.intent?.getStringExtra("username") as String
+        val db = FirebaseFirestore.getInstance()
+
+        //update customer order
+        db.collection("customer orders").document(number).apply{
+            update("rider", username)
+            update("status", "IN DELIVERY")
+            //default "IN PROGRESS"
+        }
+        //update rider profile
+        db.collection("riders").document(username).get()
+            .addOnSuccessListener{
+                val currentdelivery = it.data?.get("currentdelivery") as MutableList<String>
+                var size = currentdelivery.size
+                Log.d("_verify", "currentdelivery.size = $size")
+                currentdelivery.add(number)
+                size = currentdelivery.size
+                Log.d("_verify", "currentdelivery.size after adding = $size")
+                db.collection("riders").document(username).update("currentdelivery", currentdelivery)
+
+            }
+
+
+
+    }
+
+    fun moveToCurrentDelivery(){
+
+
+    }
 
 
 }

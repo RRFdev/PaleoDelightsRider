@@ -3,6 +3,7 @@ package com.rrdsolutions.paleodelightsrider.ui.currentdelivery
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ktx.getField
 
 class CurrentDeliveryViewModel : ViewModel() {
 
@@ -18,18 +19,23 @@ class CurrentDeliveryViewModel : ViewModel() {
 
         db.get()
             .addOnSuccessListener{
+                //val currentdelivery: List<String>
 
-                val currentdelivery = it.get("currentdelivery") as String
-                Log.d("_currentdelivery", "currentdelivery = $currentdelivery")
+                //val currentdelivery = it.get("currentdelivery") as String
+                //currentdelivery = it.data?.get("current delivery") as List<String>
+                val currentdelivery = it.data?.get("currentdelivery") as MutableList<String>
 
-                if (currentdelivery == ""){
+                val size = currentdelivery.size
+                Log.d("_currentdelivery", "currentdelivery.size = $size")
+
+                if (size == 0){
                     callback("No Delivery")
                 }
                 else{
 
-
                     callback("Delivery Present")
                 }
+
 
             }
             .addOnFailureListener{

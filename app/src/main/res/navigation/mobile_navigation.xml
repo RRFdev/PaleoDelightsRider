@@ -34,7 +34,7 @@
     <fragment
         android:id="@+id/nav_verifydelivery"
         android:name="com.rrdsolutions.paleodelightsrider.ui.verifydelivery.VerifyDeliveryFragment"
-        android:label="Log out"
+        android:label="Verify Delivery"
         tools:layout="@layout/fragment_verifydelivery" >
         <action
             android:id="@+id/action_pickup"

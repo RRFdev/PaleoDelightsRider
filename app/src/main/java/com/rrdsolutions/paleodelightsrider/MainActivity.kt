@@ -22,6 +22,8 @@ import com.google.firebase.FirebaseApp
 import com.rrdsolutions.paleodelightsrider.ui.login.LoginActivity
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
+import kotlinx.android.synthetic.main.testtext.*
+import kotlinx.android.synthetic.main.testtext.view.*
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
     lateinit var appBarConfiguration: AppBarConfiguration
@@ -41,7 +43,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val drawerLayout: DrawerLayout = findViewById(R.id.drawer)
         val navView: NavigationView = findViewById(R.id.nav_view)
 
-                val navHostFragment = supportFragmentManager
+        val navHostFragment = supportFragmentManager
             .findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         val navController = navHostFragment.navController
         //val navController = findNavController(R.id.nav_host_fragment)
@@ -62,7 +64,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         //navView.menu.findItem(R.id.nav_logout).isVisible = false
 
-
+        val testtext = layoutInflater.inflate(R.layout.testtext, null)
+        testtext.textView.text = "this is a test"
 
 
     }

@@ -5,15 +5,17 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
 import androidx.appcompat.widget.Toolbar
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
 import com.rrdsolutions.paleodelightsrider.OrderModel
 import com.rrdsolutions.paleodelightsrider.R
-import kotlinx.android.synthetic.main.fragment_currentdelivery.layout
+import kotlinx.android.synthetic.main.fragment_pendingdelivery.*
 import kotlinx.android.synthetic.main.notificationcard.view.*
 import kotlinx.android.synthetic.main.ordercard.view.*
+
 
 
 class PendingDeliveryFragment : Fragment() {
@@ -51,6 +53,12 @@ class PendingDeliveryFragment : Fragment() {
         activity?.findViewById<ConstraintLayout>(R.id.loadingscreen)?.visibility = View.GONE
     }
 
+    override fun onPause(){
+        super.onPause()
+        layout.removeAllViews()
+    }
+
+
     override fun onResume() {
         super.onResume()
 
@@ -61,6 +69,7 @@ class PendingDeliveryFragment : Fragment() {
 
     fun loadPendingDelivery(){
 
+        val linearlayout = getActivity()?.layoutInflater?.inflate(R.layout.pendingdeliverylinearlayout, null)
         for (i in 0 until OrderModel.pendingorderlist.size){
             val ordercard = getActivity()?.layoutInflater?.inflate(R.layout.ordercard, null)
             ordercard?.number?.text = OrderModel.pendingorderlist[i].number
@@ -71,8 +80,11 @@ class PendingDeliveryFragment : Fragment() {
             }
 
 
-            layout.addView(ordercard)
+            //layout.addView(ordercard)
+            linearlayout?.findViewById<LinearLayout>(R.id.layout222)?.addView(ordercard)
         }
+        layout.addView(linearlayout)
+
         activity?.findViewById<ConstraintLayout>(R.id.loadingscreen)?.visibility = View.GONE
 
     }
