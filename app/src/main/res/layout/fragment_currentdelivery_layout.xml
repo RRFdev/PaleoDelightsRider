@@ -2,15 +2,15 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mainlayout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="#FFFFFF">
-
+    android:layout_height="match_parent">
 
     <androidx.cardview.widget.CardView
         android:id="@+id/cardView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        app:cardElevation="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -24,13 +24,12 @@
                 android:id="@+id/visiblelayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:elevation="16dp"
                 android:padding="16dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent">
 
                 <TextView
-                    android:id="@+id/deliveryname"
+                    android:id="@+id/number"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:gravity="center|left"
@@ -41,7 +40,7 @@
                     app:layout_constraintTop_toTopOf="@+id/imageView2" />
 
                 <ImageView
-                    android:id="@+id/expandbtn"
+                    android:id="@+id/expandimage"
                     android:layout_width="40dp"
                     android:layout_height="0dp"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -56,7 +55,7 @@
                 android:layout_height="wrap_content"
                 android:elevation="16dp"
                 android:orientation="vertical"
-                android:visibility="visible"
+                android:visibility="gone"
                 app:layout_constraintTop_toBottomOf="@+id/visiblelayout"
                 tools:layout_editor_absoluteX="0dp">
 
@@ -64,27 +63,12 @@
                     android:id="@+id/menuitemsholder"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:id="@+id/textView2"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:padding="16dp"
-                        android:text="Chicken Curry Soup with Promegranate x 1"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/constraintLayout" />
-
-
-                </LinearLayout>
+                    android:orientation="vertical" />
 
                 <View
                     android:id="@+id/divider"
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:layout_marginLeft="16dp"
-                    android:layout_marginRight="16dp"
                     android:background="?android:attr/listDivider"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -121,15 +105,57 @@
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 
-    <com.google.android.gms.maps.MapView
-        android:id="@+id/vmap"
-        android:layout_width="0dp"
+
+    <FrameLayout
+        android:id="@+id/frameLayout"
+        android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layout_constraintBottom_toTopOf="@+id/buttonlayout"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/cardView" />
+        app:layout_constraintTop_toBottomOf="@+id/cardView"
+        tools:layout_editor_absoluteX="0dp">
 
+        <!--        <com.google.android.gms.maps.MapView-->
+        <!--            android:id="@+id/vmap"-->
+        <!--            android:layout_width="match_parent"-->
+        <!--            android:layout_height="match_parent" />-->
+        <fragment
+            android:id="@+id/cmap"
+            android:name="com.google.android.gms.maps.SupportMapFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="visible" />
+        <!--        <LinearLayout-->
+        <!--            android:id="@+id/errorlayout"-->
+        <!--            android:layout_width="match_parent"-->
+        <!--            android:layout_height="match_parent"-->
+        <!--            android:orientation= "vertical"-->
+        <!--            android:visibility="gone"-->
+        <!--            >-->
+
+        <!--        -->
+
+
+        <!--        </LinearLayout>-->
+        <androidx.cardview.widget.CardView
+
+            android:id="@+id/errorcard"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:layout_gravity="center"
+            android:layout_margin="16dp"
+            android:visibility="gone"
+            app:cardBackgroundColor="#D6D6D6"
+            app:cardUseCompatPadding="true">
+
+            <TextView
+                android:id="@+id/notificationtext"
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                android:gravity="center"
+                android:text="Address couldn't be verified. Please contact the customer for assistance" />
+        </androidx.cardview.widget.CardView>
+
+    </FrameLayout>
 
     <LinearLayout
         android:id="@+id/buttonlayout"
@@ -162,17 +188,51 @@
             android:layout_marginBottom="12dp"
             android:layout_weight="1"
             android:text="canceled" />
+
     </LinearLayout>
 
+
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/floatingActionButton"
+        android:id="@+id/fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="32dp"
-        android:layout_marginBottom="32dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
         android:clickable="true"
-        app:layout_constraintBottom_toBottomOf="@+id/vmap"
+        app:layout_constraintBottom_toBottomOf="@+id/frameLayout"
         app:layout_constraintEnd_toEndOf="parent"
         app:srcCompat="@android:drawable/ic_menu_call" />
+
+    <ImageButton
+        android:id="@+id/leftbutton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:scaleType="fitXY"
+        app:layout_constraintBottom_toBottomOf="@+id/frameLayout"
+        app:layout_constraintStart_toStartOf="@+id/frameLayout"
+        app:layout_constraintTop_toBottomOf="@+id/cardView"
+        app:srcCompat="@drawable/ic_arrowleft" />
+
+    <ImageButton
+        android:id="@+id/rightbutton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:scaleType="fitXY"
+        app:layout_constraintBottom_toBottomOf="@+id/frameLayout"
+        app:layout_constraintEnd_toEndOf="@+id/frameLayout"
+        app:layout_constraintTop_toBottomOf="@+id/cardView"
+        app:srcCompat="@drawable/ic_arrowright" />
+
+    <ImageButton
+        android:id="@+id/dotbutton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:backgroundTint=" #0000"
+        android:scaleType="fitXY"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/cardView"
+        app:srcCompat="@drawable/ic_dot_vertical" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

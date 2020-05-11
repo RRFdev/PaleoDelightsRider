@@ -13,6 +13,7 @@ import androidx.appcompat.widget.Toolbar
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.Navigation
 import androidx.transition.AutoTransition
 import androidx.transition.Fade
 import androidx.transition.TransitionManager
@@ -195,13 +196,10 @@ class VerifyDeliveryFragment : Fragment() {
 
             }
 
-
-
     }
 
     fun moveToCurrentDelivery(){
-
-
+        view?.let { Navigation.findNavController(it).navigate(R.id.action_pickup) }
     }
 
 
