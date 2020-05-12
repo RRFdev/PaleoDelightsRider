@@ -7,6 +7,7 @@ import android.content.pm.PackageManager
 import android.graphics.Color
 import android.location.Location
 import android.os.Bundle
+import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -28,8 +29,7 @@ import com.android.volley.toolbox.Volley
 import com.beust.klaxon.JsonArray
 import com.beust.klaxon.JsonObject
 import com.beust.klaxon.Parser
-import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.*
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -65,18 +65,6 @@ class CurrentDeliveryFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMark
         vm.username = activity?.intent?.getStringExtra("username") as String
         Log.d("_currentdelivery", "username = $vm.username")
 
-    }
-
-    override fun onPause(){
-        layout.removeAllViews()
-        super.onPause()
-    }
-
-
-
-    override fun onResume(){
-        super.onResume()
-
         vm.queryRider(){ callback->
 
             when (callback){
@@ -84,9 +72,34 @@ class CurrentDeliveryFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMark
                 "No Delivery"->loadNoDelivery("No deliveries at the moment")
                 "No Connection"->loadNoDelivery("ERROR: Unable to reach database. Please check your online connection")
             }
-
-
         }
+    }
+
+    override fun onPause(){
+        //layout.removeAllViews()
+        super.onPause()
+    }
+
+    override fun onResume(){
+        super.onResume()
+
+
+
+        //if (requestingLocationUpdates) startLocationUpdates()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     }
 
@@ -155,34 +168,83 @@ class CurrentDeliveryFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMark
         }
         else {
             Log.d("maptest", "User permission granted")
+
             map.isMyLocationEnabled = true
             //adds rider location
-            fusedLocationClient.lastLocation
-                .addOnSuccessListener {
-                if (it != null){
-                    lastLocation = it
-                    val userLoc = LatLng(it.latitude, it.longitude)
-                    val titleStr = "Your location"
+            fun showLocationOnce(){
+                fusedLocationClient.lastLocation
+                    .addOnSuccessListener {
+                        if (it != null){
+                            lastLocation = it
+                            val userLoc = LatLng(it.latitude, it.longitude)
+                            val titleStr = "Your location"
 
-                    val dLoc = LatLng(3.8032, 103.3241)
-                    val dLabel = "Kompleks Teruntum"
+                            val dLoc = LatLng(3.8032, 103.3241)
+                            val dLabel = "Kompleks Teruntum"
 
-                    //map.addMarker(MarkerOptions().position(userLoc).title(titleStr).
-                    //icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)))
-                        //.showInfoWindow()
-                    map.addMarker(MarkerOptions().position(dLoc).title(dLabel)).showInfoWindow()
+                            //map.addMarker(MarkerOptions().position(userLoc).title(titleStr).
+                            //icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)))
+                            //.showInfoWindow()
+                            map.addMarker(MarkerOptions().position(dLoc).title(dLabel)).showInfoWindow()
 
 
-                    val interlat = abs((it.latitude + 3.8032)/2)
-                    val interlong = abs((it.longitude + 103.3241)/2)
-                    val interLog = LatLng(interlat, interlong)
-                    //map.moveCamera(CameraUpdateFactory.newLatLngZoom(userLoc, 13f))
-                    map.moveCamera(CameraUpdateFactory.newLatLngZoom(interLog, 13f))
-                    //13 for 10 km distance, higher means zoom in
+                            val interlat = abs((it.latitude + 3.8032)/2)
+                            val interlong = abs((it.longitude + 103.3241)/2)
+                            val interLog = LatLng(interlat, interlong)
+                            //map.moveCamera(CameraUpdateFactory.newLatLngZoom(userLoc, 13f))
+                            map.moveCamera(CameraUpdateFactory.newLatLngZoom(interLog, 13f))
+                            //13 for 10 km distance, higher means zoom in
 
+                        }
+                    }
+            }
+
+
+            fun startLocationUpdates() {
+                val locationCallback = object : LocationCallback() {
+                    override fun onLocationResult(locationResult: LocationResult?) {
+                        locationResult ?: return
+                        for (it in locationResult.locations){
+
+                            // Update UI with location data
+                            // ...
+                            val userLoc = LatLng(it.latitude, it.longitude)
+                            val titleStr = "Your location"
+
+                            val dLoc = LatLng(3.8032, 103.3241)
+                            val dLabel = "Kompleks Teruntum"
+
+                            //map.addMarker(MarkerOptions().position(userLoc).title(titleStr).
+                            //icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)))
+                            //.showInfoWindow()
+                            map.addMarker(MarkerOptions().position(dLoc).title(dLabel)).showInfoWindow()
+
+
+                            val interlat = abs((it.latitude + 3.8032)/2)
+                            val interlong = abs((it.longitude + 103.3241)/2)
+                            val interLog = LatLng(interlat, interlong)
+                            //map.moveCamera(CameraUpdateFactory.newLatLngZoom(userLoc, 13f))
+                            map.moveCamera(CameraUpdateFactory.newLatLngZoom(interLog, 13f))
+                        }
+                    }
                 }
+                val locationRequest = LocationRequest.create().apply{
+                    priority = LocationRequest.PRIORITY_HIGH_ACCURACY
+                    interval = (2 * 1000).toLong() //10 seconds
+                    fastestInterval = 2000 //2 seconds
                 }
-                .addOnFailureListener{}
+
+                fusedLocationClient.requestLocationUpdates(locationRequest,
+                    locationCallback,
+                    Looper.getMainLooper())
+
+            }
+
+
+            startLocationUpdates()
+
+
+
         }
 
     }
@@ -192,20 +254,7 @@ class CurrentDeliveryFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMark
     }
 
 
-    fun getURL(from : LatLng, to : LatLng) : String {
-            val origin = "origin=" + from.latitude + "," + from.longitude
-            val dest = "destination=" + to.latitude + "," + to.longitude
-            val sensor = "sensor=false"
-            val params = "$origin&$dest&$sensor"
-            return "https://maps.googleapis.com/maps/api/directions/json?$params"
-    }
-    fun getJson(result:String):JsonObject{
-       // val parser: Parser = Parser()
-        val stringBuilder: StringBuilder = StringBuilder(result)
-        val json: JsonObject = Parser().parse(stringBuilder) as JsonObject
 
-        return json
-    }
 
 
 }
