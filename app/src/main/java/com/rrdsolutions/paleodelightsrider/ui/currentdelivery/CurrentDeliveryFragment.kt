@@ -5,6 +5,7 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.pm.PackageManager
 import android.graphics.Color
+import android.location.Geocoder
 import android.location.Location
 import android.os.Bundle
 import android.os.Looper
@@ -48,6 +49,7 @@ class CurrentDeliveryFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMark
     lateinit var map: GoogleMap
     lateinit var fusedLocationClient: FusedLocationProviderClient
     lateinit var lastLocation: Location
+    lateinit var destiLoc:LatLng
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -68,7 +70,7 @@ class CurrentDeliveryFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMark
         vm.queryRider(){ callback->
 
             when (callback){
-                "Delivery Present"->loadCurrentDelivery()
+                "Delivery Present"->loadCurrentDelivery(0)
                 "No Delivery"->loadNoDelivery("No deliveries at the moment")
                 "No Connection"->loadNoDelivery("ERROR: Unable to reach database. Please check your online connection")
             }
@@ -103,13 +105,28 @@ class CurrentDeliveryFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMark
 
     }
 
-    fun loadCurrentDelivery(){
+
+    fun loadCurrentDelivery(i:Int){
+
+        getCoordinatesFromOrderAddress(i){
+            destiLoc = it
+        }
         layout.removeAllViews()
 //
         val currentdeliverylayout = layoutInflater.inflate(R.layout.fragment_currentdelivery_layout, null)
         val mapFragment =childFragmentManager.findFragmentById(R.id.cmap) as SupportMapFragment
         mapFragment.getMapAsync(this)
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity().baseContext)
+
+        //fill card details
+
+
+
+
+
+
+
+
 //
 //        currentdeliverylayout.dotbutton.setOnClickListener{
 ////            val popupMenu: PopupMenu = PopupMenu(requireContext(),dotbutton)
@@ -140,6 +157,20 @@ class CurrentDeliveryFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMark
         layout.addView(currentdeliverylayout)
         activity?.findViewById<ConstraintLayout>(R.id.loadingscreenmain)?.visibility = View.GONE
     }
+
+
+    fun getCoordinatesFromOrderAddress(i: Int, callback:(LatLng)->Unit){
+
+        val deliveryname = vm.currentdelivery[i]
+        vm.queryDelivery(deliveryname){
+            val location = Geocoder(this.context as Activity)
+                .getFromLocationName(it, 1)
+            val coordinate = LatLng (location[0].latitude, location[0].longitude)
+            callback(coordinate)
+        }
+    }
+
+
 
     @SuppressLint("SetTextI18n")
     fun loadNoDelivery(text:String){
@@ -185,8 +216,8 @@ class CurrentDeliveryFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMark
                             //map.addMarker(MarkerOptions().position(userLoc).title(titleStr).
                             //icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)))
                             //.showInfoWindow()
-                            map.addMarker(MarkerOptions().position(dLoc).title(dLabel)).showInfoWindow()
-
+                            //map.addMarker(MarkerOptions().position(dLoc).title(dLabel)).showInfoWindow()
+                            map.addMarker(MarkerOptions().position(destiLoc).title(dLabel)).showInfoWindow()
 
                             val interlat = abs((it.latitude + 3.8032)/2)
                             val interlong = abs((it.longitude + 103.3241)/2)

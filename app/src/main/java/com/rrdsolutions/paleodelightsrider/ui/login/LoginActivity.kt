@@ -28,8 +28,6 @@ class LoginActivity : AppCompatActivity() {
         FirebaseApp.initializeApp(this)
         vm = ViewModelProvider(this).get(LoginViewModel::class.java)
 
-        Log.d("_TEST", "in Login")
-
         loginbutton.setOnClickListener{
 
             vm.visibility.value = View.VISIBLE

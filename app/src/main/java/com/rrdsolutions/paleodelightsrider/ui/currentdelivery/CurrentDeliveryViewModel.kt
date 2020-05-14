@@ -1,7 +1,9 @@
 package com.rrdsolutions.paleodelightsrider.ui.currentdelivery
 
+import android.app.Activity
 import android.content.Context
 import android.graphics.Color
+import android.location.Geocoder
 import android.os.AsyncTask
 import android.util.Log
 import android.widget.TextView
@@ -11,6 +13,7 @@ import com.google.android.gms.maps.model.PolylineOptions
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.getField
 import com.google.maps.android.PolyUtil
+import com.rrdsolutions.paleodelightsrider.OrderModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
@@ -27,9 +30,9 @@ import java.net.URL
 class CurrentDeliveryViewModel : ViewModel() {
 
     lateinit var username: String
+    lateinit var currentdelivery:MutableList<String>
 
-    val api = "AIzaSyDOBelSygRLsScFP6fPNiL_xvtXQZZIbG8"
-    val api2 = "AIzaSyCCIsUDaWJNPdoszn_84jqV4Y3i4vn-gOA"
+    var currentorderlist = arrayListOf<OrderModel.Order>()
 
     fun queryRider(callback: (String)->Unit){
         Log.d("_currentdelivery", "Querying rider $username")
@@ -43,7 +46,7 @@ class CurrentDeliveryViewModel : ViewModel() {
 
                 //val currentdelivery = it.get("currentdelivery") as String
                 //currentdelivery = it.data?.get("current delivery") as List<String>
-                val currentdelivery = it.data?.get("currentdelivery") as MutableList<String>
+                currentdelivery = it.data?.get("currentdelivery") as MutableList<String>
 
                 val size = currentdelivery.size
                 Log.d("_currentdelivery", "currentdelivery.size = $size")
@@ -52,7 +55,6 @@ class CurrentDeliveryViewModel : ViewModel() {
                     callback("No Delivery")
                 }
                 else{
-
                     callback("Delivery Present")
                 }
 
@@ -67,23 +69,52 @@ class CurrentDeliveryViewModel : ViewModel() {
 
     }
 
-    fun fetch_url(url: String): String {
-        return URL(url).readText()
-    }
+    fun queryDelivery(name: String, callback: (String)->Unit){
+        val db = FirebaseFirestore.getInstance()
+            .collection("customer orders").document(name)
 
-    fun fetch2(url:String, callback: (String)->Unit){
-        callback (URL(url).readText())
-    }
-
-    suspend fun fetch(url: String): String = withContext(Dispatchers.IO){
-
-        val result = URL(url).readText()
-        withContext(Dispatchers.Default){
-            result
+        db.get().addOnSuccessListener{
+            val address = it.data?.get("address") as String
+            callback(address)
         }
-
     }
 
+    fun queryRider2(callback:(String)->Unit){
+        //fill out currentdelivery
+        val db = FirebaseFirestore.getInstance()
+            .collection("customer orders")
+            .whereEqualTo("rider", username)
+        db.get()
+            .addOnSuccessListener{ documents->
 
+                if (documents.size() == 0) callback("No Delivery")
+                else{
+                    currentorderlist = arrayListOf<OrderModel.Order>()
+                    for (document in documents){
+                        val order = OrderModel.Order(
+                            document.id,
+                            document.data["phonenumber"] as String,
+                            document.data["time"] as String,
+                            document.data["eta"] as String,
+                            document.data["itemlist"] as List<String>,
+                            document.data["address"] as String,
+                            document.data["status"] as String
+                        )
+                        currentorderlist.add(order)
+                    }
+
+                    callback("Delivery Present")
+                }
+
+
+            }
+            .addOnFailureListener{
+                callback("No Connection")
+            }
+
+
+
+
+    }
 
 }
