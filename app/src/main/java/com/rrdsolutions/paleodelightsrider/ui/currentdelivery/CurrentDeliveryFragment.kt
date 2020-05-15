@@ -4,7 +4,6 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.pm.PackageManager
-import android.graphics.Color
 import android.location.Geocoder
 import android.location.Location
 import android.os.Bundle
@@ -18,29 +17,23 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import com.akexorcist.googledirection.DirectionCallback
-import com.akexorcist.googledirection.GoogleDirection
-import com.akexorcist.googledirection.constant.TransportMode
-import com.akexorcist.googledirection.model.Direction
-import com.akexorcist.googledirection.util.execute
-import com.android.volley.Request
-import com.android.volley.Response
-import com.android.volley.toolbox.StringRequest
-import com.android.volley.toolbox.Volley
-import com.beust.klaxon.JsonArray
-import com.beust.klaxon.JsonObject
-import com.beust.klaxon.Parser
+import androidx.transition.AutoTransition
+import androidx.transition.Fade
+import androidx.transition.TransitionManager
 import com.google.android.gms.location.*
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.*
-import com.google.maps.android.PolyUtil
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.LatLngBounds
+import com.google.android.gms.maps.model.Marker
+import com.google.android.gms.maps.model.MarkerOptions
 import com.rrdsolutions.paleodelightsrider.R
 import kotlinx.android.synthetic.main.fragment_currentdelivery.*
-import kotlinx.android.synthetic.main.notificationcard.view.*
-import org.json.JSONObject
+import kotlinx.android.synthetic.main.fragment_currentdelivery_layout.view.*
+import kotlinx.android.synthetic.main.menuitemstext.view.*
+import kotlinx.android.synthetic.main.notificationcard.view.notificationtext
 import java.lang.Math.abs
 
 class CurrentDeliveryFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
@@ -67,14 +60,7 @@ class CurrentDeliveryFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMark
         vm.username = activity?.intent?.getStringExtra("username") as String
         Log.d("_currentdelivery", "username = $vm.username")
 
-        vm.queryRider(){ callback->
 
-            when (callback){
-                "Delivery Present"->loadCurrentDelivery(0)
-                "No Delivery"->loadNoDelivery("No deliveries at the moment")
-                "No Connection"->loadNoDelivery("ERROR: Unable to reach database. Please check your online connection")
-            }
-        }
     }
 
     override fun onPause(){
@@ -84,46 +70,55 @@ class CurrentDeliveryFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMark
 
     override fun onResume(){
         super.onResume()
+        activity?.findViewById<ConstraintLayout>(R.id.loadingscreenmain)?.visibility = View.VISIBLE
+        layout.removeAllViews()
 
-
-
-        //if (requestingLocationUpdates) startLocationUpdates()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        vm.queryRider2(){ callback->
+            when (callback){
+                "Delivery Present"->loadCurrentDelivery(0)
+                "No Delivery"->loadNoDelivery("No deliveries at the moment")
+                "No Connection"->loadNoDelivery("ERROR: Unable to reach database. Please check your online connection")
+            }
+        }
     }
-
 
     fun loadCurrentDelivery(i:Int){
 
-        getCoordinatesFromOrderAddress(i){
-            destiLoc = it
-        }
-        layout.removeAllViews()
-//
+        val currentindex = i
+
         val currentdeliverylayout = layoutInflater.inflate(R.layout.fragment_currentdelivery_layout, null)
-        val mapFragment =childFragmentManager.findFragmentById(R.id.cmap) as SupportMapFragment
-        mapFragment.getMapAsync(this)
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity().baseContext)
-
         //fill card details
+        val order = vm.currentorderlist[i]
+
+
+        //number.text = order.number
+        currentdeliverylayout.number.text = order.number
 
 
 
-
-
+        for (u in 0 until order.itemlist.size){
+            val menuitemstext = layoutInflater.inflate(R.layout.menuitemstext, null)
+            menuitemstext.desc.text = order.itemlist[u]
+            currentdeliverylayout.menuitemsholder.addView(menuitemstext)
+        }
+        currentdeliverylayout.address.text = order.address
+        currentdeliverylayout.cardView.setOnClickListener{
+            if (currentdeliverylayout.hiddenlayout.visibility == View.GONE) {
+                TransitionManager.beginDelayedTransition(
+                    currentdeliverylayout.cardView as ViewGroup,
+                    AutoTransition()
+                )
+                currentdeliverylayout.hiddenlayout.visibility = View.VISIBLE
+                currentdeliverylayout.expandimage.animate().rotation(180f).start()
+            } else {
+                TransitionManager.beginDelayedTransition(
+                    currentdeliverylayout.cardView as ViewGroup,
+                    Fade().setDuration(300)
+                )
+                currentdeliverylayout.hiddenlayout.visibility = View.GONE
+                currentdeliverylayout.expandimage.animate().rotation(0f).start()
+            }
+        }
 
 
 
@@ -154,23 +149,23 @@ class CurrentDeliveryFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMark
 ////            })
 //        }
 
+        getCoordinate(order.address){
+            destiLoc = it
+            val mapFragment =childFragmentManager.findFragmentById(R.id.cmap) as SupportMapFragment
+            mapFragment.getMapAsync(this)
+            fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity().baseContext)
+        }
+
         layout.addView(currentdeliverylayout)
         activity?.findViewById<ConstraintLayout>(R.id.loadingscreenmain)?.visibility = View.GONE
     }
 
-
-    fun getCoordinatesFromOrderAddress(i: Int, callback:(LatLng)->Unit){
-
-        val deliveryname = vm.currentdelivery[i]
-        vm.queryDelivery(deliveryname){
-            val location = Geocoder(this.context as Activity)
-                .getFromLocationName(it, 1)
-            val coordinate = LatLng (location[0].latitude, location[0].longitude)
-            callback(coordinate)
-        }
+    fun getCoordinate(address:String, callback:(LatLng)->Unit){
+        val location = Geocoder(this.context as Activity)
+            .getFromLocationName(address, 1)
+        val coordinate = LatLng (location[0].latitude, location[0].longitude)
+        callback(coordinate)
     }
-
-
 
     @SuppressLint("SetTextI18n")
     fun loadNoDelivery(text:String){
@@ -187,7 +182,6 @@ class CurrentDeliveryFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMark
         map.uiSettings.isZoomControlsEnabled = true
         //declare this Fragment as target when user clicks marker
         //map.setOnMarkerClickListener(this)
-
         if (ActivityCompat.checkSelfPermission(this.context as Activity, Manifest.permission.ACCESS_FINE_LOCATION)
             != PackageManager.PERMISSION_GRANTED
             && ActivityCompat.checkSelfPermission(this.context as Activity, Manifest.permission.ACCESS_COARSE_LOCATION)
@@ -229,40 +223,31 @@ class CurrentDeliveryFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMark
                         }
                     }
             }
-
-
             fun startLocationUpdates() {
                 val locationCallback = object : LocationCallback() {
                     override fun onLocationResult(locationResult: LocationResult?) {
                         locationResult ?: return
                         for (it in locationResult.locations){
-
                             // Update UI with location data
-                            // ...
                             val userLoc = LatLng(it.latitude, it.longitude)
-                            val titleStr = "Your location"
+                            val dLabel = "Delivery location"
+                            map.addMarker(MarkerOptions().position(destiLoc).title(dLabel)).showInfoWindow()
 
-                            val dLoc = LatLng(3.8032, 103.3241)
-                            val dLabel = "Kompleks Teruntum"
+                            val builder = LatLngBounds.Builder().apply{
+                                include(userLoc)
+                                include(destiLoc)
+                            }.build()
+                            val cameraupdate = CameraUpdateFactory.newLatLngBounds(builder, 100)
+                            map.animateCamera(cameraupdate)
 
-                            //map.addMarker(MarkerOptions().position(userLoc).title(titleStr).
-                            //icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)))
-                            //.showInfoWindow()
-                            map.addMarker(MarkerOptions().position(dLoc).title(dLabel)).showInfoWindow()
 
-
-                            val interlat = abs((it.latitude + 3.8032)/2)
-                            val interlong = abs((it.longitude + 103.3241)/2)
-                            val interLog = LatLng(interlat, interlong)
-                            //map.moveCamera(CameraUpdateFactory.newLatLngZoom(userLoc, 13f))
-                            map.moveCamera(CameraUpdateFactory.newLatLngZoom(interLog, 13f))
                         }
                     }
                 }
                 val locationRequest = LocationRequest.create().apply{
                     priority = LocationRequest.PRIORITY_HIGH_ACCURACY
-                    interval = (2 * 1000).toLong() //10 seconds
-                    fastestInterval = 2000 //2 seconds
+                    interval = (10 * 1000).toLong()
+                    //fastestInterval = (2 * 1000).toLong()
                 }
 
                 fusedLocationClient.requestLocationUpdates(locationRequest,
@@ -270,8 +255,6 @@ class CurrentDeliveryFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMark
                     Looper.getMainLooper())
 
             }
-
-
             startLocationUpdates()
 
 

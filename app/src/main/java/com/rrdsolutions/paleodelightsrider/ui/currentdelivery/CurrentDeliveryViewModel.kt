@@ -9,6 +9,7 @@ import android.util.Log
 import android.widget.TextView
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.PolylineOptions
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.getField
@@ -49,7 +50,7 @@ class CurrentDeliveryViewModel : ViewModel() {
                 currentdelivery = it.data?.get("currentdelivery") as MutableList<String>
 
                 val size = currentdelivery.size
-                Log.d("_currentdelivery", "currentdelivery.size = $size")
+                Log.d("_currentdelivery", "currentdelivery.size ="+currentdelivery.size)
 
                 if (size == 0){
                     callback("No Delivery")
@@ -79,6 +80,10 @@ class CurrentDeliveryViewModel : ViewModel() {
         }
     }
 
+
+
+
+
     fun queryRider2(callback:(String)->Unit){
         //fill out currentdelivery
         val db = FirebaseFirestore.getInstance()
@@ -86,7 +91,7 @@ class CurrentDeliveryViewModel : ViewModel() {
             .whereEqualTo("rider", username)
         db.get()
             .addOnSuccessListener{ documents->
-
+                Log.d("_currentdelivery", "size = "+documents.size())
                 if (documents.size() == 0) callback("No Delivery")
                 else{
                     currentorderlist = arrayListOf<OrderModel.Order>()
