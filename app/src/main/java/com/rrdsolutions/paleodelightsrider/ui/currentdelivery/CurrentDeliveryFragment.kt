@@ -84,18 +84,13 @@ class CurrentDeliveryFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMark
 
     fun loadCurrentDelivery(i:Int){
 
-        val currentindex = i
+        var currentindex = i
 
         val currentdeliverylayout = layoutInflater.inflate(R.layout.fragment_currentdelivery_layout, null)
         //fill card details
         val order = vm.currentorderlist[i]
 
-
-        //number.text = order.number
         currentdeliverylayout.number.text = order.number
-
-
-
         for (u in 0 until order.itemlist.size){
             val menuitemstext = layoutInflater.inflate(R.layout.menuitemstext, null)
             menuitemstext.desc.text = order.itemlist[u]
@@ -119,6 +114,22 @@ class CurrentDeliveryFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMark
                 currentdeliverylayout.expandimage.animate().rotation(0f).start()
             }
         }
+        currentdeliverylayout.leftbutton.setOnClickListener{
+            if (currentindex != 0) currentindex--
+            //loadCurrentDelivery(currentindex)
+        }
+        currentdeliverylayout.rightbutton.setOnClickListener{
+            if (currentindex == vm.currentorderlist.size){
+                currentindex = 0
+
+            }
+            else {
+                currentindex++
+            }
+            //loadCurrentDelivery(currentindex)
+        }
+
+
 
 
 
