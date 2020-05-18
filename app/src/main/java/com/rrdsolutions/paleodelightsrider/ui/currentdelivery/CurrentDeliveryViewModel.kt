@@ -30,6 +30,7 @@ import java.net.URL
 
 class CurrentDeliveryViewModel : ViewModel() {
 
+    var index = 0
     lateinit var username: String
     lateinit var currentdelivery:MutableList<String>
 

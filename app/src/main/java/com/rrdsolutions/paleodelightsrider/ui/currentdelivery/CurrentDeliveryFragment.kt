@@ -10,8 +10,10 @@ import android.os.Bundle
 import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.widget.PopupMenu
 import androidx.appcompat.widget.Toolbar
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
@@ -30,10 +32,9 @@ import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.rrdsolutions.paleodelightsrider.R
-import kotlinx.android.synthetic.main.fragment_currentdelivery.*
-import kotlinx.android.synthetic.main.fragment_currentdelivery_layout.view.*
+
+import kotlinx.android.synthetic.main.fragment_currentdelivery_layout2.*
 import kotlinx.android.synthetic.main.menuitemstext.view.*
-import kotlinx.android.synthetic.main.notificationcard.view.notificationtext
 import java.lang.Math.abs
 
 class CurrentDeliveryFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
@@ -44,23 +45,68 @@ class CurrentDeliveryFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMark
     lateinit var lastLocation: Location
     lateinit var destiLoc:LatLng
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         activity?.findViewById<Toolbar>(R.id.toolbarmain)?.title = "Current Delivery"
 
 
-        return inflater.inflate(R.layout.fragment_currentdelivery, container, false)
+        return inflater.inflate(R.layout.fragment_currentdelivery_layout2, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        Log.d("_currentdelivery", "dot button clicked")
+
         vm = ViewModelProvider(this).get(CurrentDeliveryViewModel::class.java)
         vm.username = activity?.intent?.getStringExtra("username") as String
         Log.d("_currentdelivery", "username = $vm.username")
 
+        leftbutton.setOnClickListener{
+            if (vm.index != 0) {
+                vm.index--
+            }
+            else {
+                vm.index = vm.currentorderlist.size-1
+            }
+            loadCurrentDelivery(vm.index)
+        }
+        rightbutton.setOnClickListener{
+            if (vm.index == (vm.currentorderlist.size-1)){
+                vm.index = 0
 
+            }
+            else {
+                vm.index++
+            }
+            loadCurrentDelivery(vm.index)
+        }
+
+        dotbutton.setOnClickListener{
+
+            fun menuClicked(i:Int):MenuItem.OnMenuItemClickListener{
+                val test = MenuItem.OnMenuItemClickListener {
+                    when (it.title){
+                        vm.currentorderlist[i].number->{
+                            loadCurrentDelivery(i)
+                        }
+                    }
+                    true
+                }
+                return test
+            }
+            val popupMenu = PopupMenu(requireContext(),dotbutton)
+
+            for (i in 0 until vm.currentorderlist.size){
+                popupMenu.menu
+                    .add(vm.currentorderlist[i].number)
+                    .setOnMenuItemClickListener(menuClicked(i))
+            }
+            Log.d("_current", "dot button clicked")
+            popupMenu.show()
+        }
+
+        mainlayout.visibility = View.GONE
+        notificationlayout.visibility = View.GONE
     }
 
     override fun onPause(){
@@ -71,63 +117,65 @@ class CurrentDeliveryFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMark
     override fun onResume(){
         super.onResume()
         activity?.findViewById<ConstraintLayout>(R.id.loadingscreenmain)?.visibility = View.VISIBLE
-        layout.removeAllViews()
+        //layout.removeAllViews()
 
         vm.queryRider2(){ callback->
             when (callback){
-                "Delivery Present"->loadCurrentDelivery(0)
+                "Delivery Present"->{
+
+                    loadCurrentDelivery(vm.index)
+                }
                 "No Delivery"->loadNoDelivery("No deliveries at the moment")
                 "No Connection"->loadNoDelivery("ERROR: Unable to reach database. Please check your online connection")
             }
         }
     }
+    @SuppressLint("SetTextI18n")
+    fun loadNoDelivery(text:String){
+//        layout.removeAllViews()
+//        val notificationcard = layoutInflater.inflate(R.layout.notificationcard, null)
+//        notificationcard.notificationtext.text = text
+//        layout.addView(notificationcard)
+//        activity?.findViewById<ConstraintLayout>(R.id.loadingscreenmain)?.visibility = View.GONE
+        mainlayout.visibility = View.GONE
+        notificationlayout.visibility = View.VISIBLE
+        notificationtext.text = text
+    }
 
     fun loadCurrentDelivery(i:Int){
+        mainlayout.visibility = View.VISIBLE
+        notificationlayout.visibility = View.GONE
 
-        var currentindex = i
 
-        val currentdeliverylayout = layoutInflater.inflate(R.layout.fragment_currentdelivery_layout, null)
+        //val currentdeliverylayout = layoutInflater.inflate(R.layout.fragment_currentdelivery_layout, null)
         //fill card details
         val order = vm.currentorderlist[i]
 
-        currentdeliverylayout.number.text = order.number
+        number.text = order.number
         for (u in 0 until order.itemlist.size){
             val menuitemstext = layoutInflater.inflate(R.layout.menuitemstext, null)
             menuitemstext.desc.text = order.itemlist[u]
-            currentdeliverylayout.menuitemsholder.addView(menuitemstext)
+            menuitemsholder.addView(menuitemstext)
         }
-        currentdeliverylayout.address.text = order.address
-        currentdeliverylayout.cardView.setOnClickListener{
-            if (currentdeliverylayout.hiddenlayout.visibility == View.GONE) {
+        address.text = order.address
+        cardView.setOnClickListener{
+            if (hiddenlayout.visibility == View.GONE) {
                 TransitionManager.beginDelayedTransition(
-                    currentdeliverylayout.cardView as ViewGroup,
+                    cardView as ViewGroup,
                     AutoTransition()
                 )
-                currentdeliverylayout.hiddenlayout.visibility = View.VISIBLE
-                currentdeliverylayout.expandimage.animate().rotation(180f).start()
+                hiddenlayout.visibility = View.VISIBLE
+                expandimage.animate().rotation(180f).start()
             } else {
                 TransitionManager.beginDelayedTransition(
-                    currentdeliverylayout.cardView as ViewGroup,
+                    cardView as ViewGroup,
                     Fade().setDuration(300)
                 )
-                currentdeliverylayout.hiddenlayout.visibility = View.GONE
-                currentdeliverylayout.expandimage.animate().rotation(0f).start()
+                hiddenlayout.visibility = View.GONE
+                expandimage.animate().rotation(0f).start()
             }
         }
-        currentdeliverylayout.leftbutton.setOnClickListener{
-            if (currentindex != 0) currentindex--
-            //loadCurrentDelivery(currentindex)
-        }
-        currentdeliverylayout.rightbutton.setOnClickListener{
-            if (currentindex == vm.currentorderlist.size){
-                currentindex = 0
 
-            }
-            else {
-                currentindex++
-            }
-            //loadCurrentDelivery(currentindex)
-        }
 
 
 
@@ -167,7 +215,7 @@ class CurrentDeliveryFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMark
             fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity().baseContext)
         }
 
-        layout.addView(currentdeliverylayout)
+        //layout.addView(currentdeliverylayout)
         activity?.findViewById<ConstraintLayout>(R.id.loadingscreenmain)?.visibility = View.GONE
     }
 
@@ -178,14 +226,7 @@ class CurrentDeliveryFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMark
         callback(coordinate)
     }
 
-    @SuppressLint("SetTextI18n")
-    fun loadNoDelivery(text:String){
-        layout.removeAllViews()
-        val notificationcard = layoutInflater.inflate(R.layout.notificationcard, null)
-        notificationcard.notificationtext.text = text
-        layout.addView(notificationcard)
-        activity?.findViewById<ConstraintLayout>(R.id.loadingscreenmain)?.visibility = View.GONE
-    }
+
 
     override fun onMapReady(p0: GoogleMap?) {
         fun addDestinationMarker(){}
@@ -248,7 +289,7 @@ class CurrentDeliveryFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMark
                                 include(userLoc)
                                 include(destiLoc)
                             }.build()
-                            val cameraupdate = CameraUpdateFactory.newLatLngBounds(builder, 100)
+                            val cameraupdate = CameraUpdateFactory.newLatLngBounds(builder, 50)
                             map.animateCamera(cameraupdate)
 
 
@@ -283,3 +324,6 @@ class CurrentDeliveryFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMark
 
 
 }
+
+
+
