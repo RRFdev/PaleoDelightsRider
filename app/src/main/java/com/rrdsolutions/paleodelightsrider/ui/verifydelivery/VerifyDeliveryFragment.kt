@@ -119,20 +119,26 @@ class VerifyDeliveryFragment : Fragment() {
     fun getCoordinateFromAddress(i: Int, locationFound:(Boolean)->Unit){
 
         val address = OrderModel.pendingorderlist[i].address
-
         Log.d("_verifydelivery", "address = $address")
-        val location = Geocoder(this.context as Activity).getFromLocationName(address, 1)
 
-        if (location.size == 0){
-            Log.d("_verifydelivery", "location not found")
-            locationFound(false)
+        if (Geocoder.isPresent()){
+            val location = Geocoder(this.context as Activity).getFromLocationName(address, 1)
+            if (location.size == 0){
+                Log.d("_verifydelivery", "location not found")
+                locationFound(false)
+            }
+            else{
+                coordinate = LatLng (location[0].latitude, location[0].longitude)
+                Log.d("_verifydelivery", "location = $location")
+                Log.d("_verifydelivery", "coordinate = $coordinate")
+                locationFound(true)
+            }
         }
         else{
-            coordinate = LatLng (location[0].latitude, location[0].longitude)
-            Log.d("_verifydelivery", "location = $location")
-            Log.d("_verifydelivery", "coordinate = $coordinate")
+            coordinate = LatLng (0.0, 0.0)
             locationFound(true)
         }
+
 
     }
 
