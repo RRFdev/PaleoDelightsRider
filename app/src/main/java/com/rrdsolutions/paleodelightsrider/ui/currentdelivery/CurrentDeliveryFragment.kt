@@ -13,6 +13,7 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.appcompat.widget.PopupMenu
 import androidx.appcompat.widget.Toolbar
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -105,11 +106,42 @@ class CurrentDeliveryFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMark
         }
 
         deliverbtn.setOnClickListener{
-            val name = vm.currentorderlist[vm.index].number
+            //val name = vm.currentorderlist[vm.index].number
+            activity?.findViewById<ConstraintLayout>(R.id.loadingscreenmain)?.visibility = View.VISIBLE
+            vm.updateDelivery("DELIVERED",vm.currentorderlist[vm.index].number){
+                vm.index = 0
+                vm.queryRider2{ callback->
+                    when (callback){
+                        "Delivery Present"->{
+                            loadCurrentDelivery(vm.index)
+                            Toast.makeText(this.context as Activity, "Order "+vm.currentorderlist[vm.index].number+ " delivered", Toast.LENGTH_SHORT)
+                                .show()
+                            //Toast.makeText(this, "hsadsa", Toast.LENGTH_SHORT)
+                        }
+                        "No Delivery"->loadNoDelivery("No deliveries at the moment")
+                        "No Connection"->loadNoDelivery("ERROR: Unable to reach database. Please check your online connection")
+                    }
+                }
+            }
         }
 
         cancelbtn.setOnClickListener{
-            val name = vm.currentorderlist[vm.index].number
+            activity?.findViewById<ConstraintLayout>(R.id.loadingscreenmain)?.visibility = View.VISIBLE
+            vm.index = 0
+            vm.updateDelivery("CANCELED",vm.currentorderlist[vm.index].number){
+                vm.queryRider2{ callback->
+                    vm.index = 0
+                    when (callback){
+                        "Delivery Present"->{
+                            loadCurrentDelivery(vm.index)
+                            Toast.makeText(this.context as Activity, "Order "+vm.currentorderlist[vm.index].number+ " canceled", Toast.LENGTH_SHORT)
+                                .show()
+                        }
+                        "No Delivery"->loadNoDelivery("No deliveries at the moment")
+                        "No Connection"->loadNoDelivery("ERROR: Unable to reach database. Please check your online connection")
+                    }
+                }
+            }
         }
 
         mainlayout.visibility = View.GONE
@@ -143,9 +175,11 @@ class CurrentDeliveryFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMark
         mainlayout.visibility = View.GONE
         notificationlayout.visibility = View.VISIBLE
         notificationtext.text = text
+        activity?.findViewById<ConstraintLayout>(R.id.loadingscreenmain)?.visibility = View.GONE
     }
 
     fun loadCurrentDelivery(i:Int){
+        //activity?.findViewById<ConstraintLayout>(R.id.loadingscreenmain)?.visibility = View.VISIBLE
         mainlayout.visibility = View.VISIBLE
         notificationlayout.visibility = View.GONE
 
@@ -185,10 +219,11 @@ class CurrentDeliveryFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMark
             val mapFragment =childFragmentManager.findFragmentById(R.id.cmap) as SupportMapFragment
             mapFragment.getMapAsync(this)
             fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity().baseContext)
+            activity?.findViewById<ConstraintLayout>(R.id.loadingscreenmain)?.visibility = View.GONE
         }
 
         //layout.addView(currentdeliverylayout)
-        activity?.findViewById<ConstraintLayout>(R.id.loadingscreenmain)?.visibility = View.GONE
+
     }
 
     fun getCoordinate(address:String, callback:(LatLng)->Unit){
@@ -211,6 +246,8 @@ class CurrentDeliveryFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMark
         fun addDestinationMarker(){}
         map = p0!!
         map.uiSettings.isZoomControlsEnabled = true
+        map.clear()
+
         //declare this Fragment as target when user clicks marker
         //map.setOnMarkerClickListener(this)
         if (ActivityCompat.checkSelfPermission(this.context as Activity, Manifest.permission.ACCESS_FINE_LOCATION)

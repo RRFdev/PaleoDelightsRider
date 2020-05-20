@@ -81,7 +81,23 @@ class CurrentDeliveryViewModel : ViewModel() {
         }
     }
 
+    fun updateDelivery(status:String, number:String, callback:(Boolean)->Unit){
+        val db = FirebaseFirestore.getInstance()
+        db.collection("customer orders").document(number).apply{
+            update("status", status).addOnSuccessListener {
+                callback(true)
+            }.addOnFailureListener{
+                callback(false)
+            }
+            update("rider", "").addOnSuccessListener {
+                callback(true)
+            }.addOnFailureListener{
+                callback(false)
+            }
+        }
 
+
+    }
 
 
 
