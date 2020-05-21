@@ -62,6 +62,7 @@ class CurrentDeliveryFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMark
         Log.d("_currentdelivery", "username = $vm.username")
 
         leftbutton.setOnClickListener{
+            activity?.findViewById<ConstraintLayout>(R.id.loadingscreenmain)?.visibility = View.VISIBLE
             if (vm.index != 0) {
                 vm.index--
             }
@@ -71,6 +72,7 @@ class CurrentDeliveryFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMark
             loadCurrentDelivery(vm.index)
         }
         rightbutton.setOnClickListener{
+            activity?.findViewById<ConstraintLayout>(R.id.loadingscreenmain)?.visibility = View.VISIBLE
             if (vm.index == (vm.currentorderlist.size-1)){
                 vm.index = 0
 
@@ -84,15 +86,16 @@ class CurrentDeliveryFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMark
         dotbutton.setOnClickListener{
 
             fun menuClicked(i:Int):MenuItem.OnMenuItemClickListener{
-                val test = MenuItem.OnMenuItemClickListener {
+                val onclick = MenuItem.OnMenuItemClickListener {
                     when (it.title){
                         vm.currentorderlist[i].number->{
+                            activity?.findViewById<ConstraintLayout>(R.id.loadingscreenmain)?.visibility = View.VISIBLE
                             loadCurrentDelivery(i)
                         }
                     }
                     true
                 }
-                return test
+                return onclick
             }
             val popupMenu = PopupMenu(requireContext(),dotbutton)
 
@@ -114,7 +117,7 @@ class CurrentDeliveryFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMark
                     when (callback){
                         "Delivery Present"->{
                             loadCurrentDelivery(vm.index)
-                            Toast.makeText(this.context as Activity, "Order "+vm.currentorderlist[vm.index].number+ " delivered", Toast.LENGTH_SHORT)
+                            Toast.makeText(this.context as Activity, vm.currentorderlist[vm.index].number+ " delivered", Toast.LENGTH_SHORT)
                                 .show()
                             //Toast.makeText(this, "hsadsa", Toast.LENGTH_SHORT)
                         }
@@ -134,7 +137,7 @@ class CurrentDeliveryFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMark
                     when (callback){
                         "Delivery Present"->{
                             loadCurrentDelivery(vm.index)
-                            Toast.makeText(this.context as Activity, "Order "+vm.currentorderlist[vm.index].number+ " canceled", Toast.LENGTH_SHORT)
+                            Toast.makeText(this.context as Activity, vm.currentorderlist[vm.index].number+ " canceled", Toast.LENGTH_SHORT)
                                 .show()
                         }
                         "No Delivery"->loadNoDelivery("No deliveries at the moment")

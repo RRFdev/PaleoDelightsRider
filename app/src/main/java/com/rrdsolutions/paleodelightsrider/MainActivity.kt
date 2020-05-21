@@ -19,17 +19,24 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.navigation.NavigationView
 import com.google.firebase.FirebaseApp
+import com.google.gson.Gson
 import com.rrdsolutions.paleodelightsrider.ui.login.LoginActivity
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 import kotlinx.android.synthetic.main.testtext.*
 import kotlinx.android.synthetic.main.testtext.view.*
+import java.io.File
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
     lateinit var appBarConfiguration: AppBarConfiguration
     lateinit var vm:MainViewModel
 
     var username = ""
+
+    data class Logindetails(
+        val username:String,
+        val password:String
+    )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -62,6 +69,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         navView.getHeaderView(0).findViewById<TextView>(R.id.loggedintext)
             .text = "Logged in as $username"
 
+
+
         //navView.menu.findItem(R.id.nav_logout).isVisible = false
 
         val testtext = layoutInflater.inflate(R.layout.testtext, null)
@@ -81,20 +90,26 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     fun logout(){
-        getPreferences(0).edit().putString("username", "").apply()
-        getPreferences(0).edit().putString("password", "").apply()
+//        getPreferences(0).edit().putString("username", "").apply()
+//        getPreferences(0).edit().putString("password", "").apply()
+//
+//        val username = getPreferences(0).getString("username", "").toString()
+//        val password = getPreferences(0).getString("password", "").toString()
+//
+//        Log.d("_login", "after logout, username = $username, password = $password")
+
+        val emptylogin = Logindetails("", "")
+        val file = File(this.filesDir.path.toString() + "logindetails")
+        file.writeText(Gson().toJson(emptylogin))
+
+
 
         val intent = Intent(this, LoginActivity::class.java)
         intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY or Intent.FLAG_ACTIVITY_CLEAR_TOP)
         startActivity(intent)
-        Log.d("_main", "moving to LoginActivity")
-        Log.d("_main", "logout clicked")
-
-//        nav_view.visibility = View.GONE
-//        appbar.visibility = View.GONE
-//        drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
+//        Log.d("_main", "moving to LoginActivity")
+//        Log.d("_main", "logout clicked")
 //
-//        Navigation.findNavController(findViewById(R.id.nav_host_fragment)).navigate(R.id.nav_logout)
 
     }
 

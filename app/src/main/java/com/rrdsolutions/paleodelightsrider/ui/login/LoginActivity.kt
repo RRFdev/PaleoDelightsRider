@@ -12,14 +12,24 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.google.firebase.FirebaseApp
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.gson.Gson
 import com.rrdsolutions.paleodelightsrider.MainActivity
 import com.rrdsolutions.paleodelightsrider.R
 import kotlinx.android.synthetic.main.activity_login.*
+import java.io.File
+
+
 
 class LoginActivity : AppCompatActivity() {
     lateinit var vm: LoginViewModel
+
     var username = ""
     var password = ""
+
+    data class Logindetails(
+        val username:String,
+        val password:String
+    )
 
     @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -92,20 +102,32 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun checkLogin(){
-        username = getPreferences(0).getString("username", "").toString()
-        password = getPreferences(0).getString("password", "").toString()
-        Log.d("_login", "username = $username, password = $password")
+//        username = getPreferences(0).getString("username", "").toString()
+//        password = getPreferences(0).getString("password", "").toString()
+//        Log.d("_login", "username = $username, password = $password")
+//
+        val file = File(this.filesDir.path.toString() + "logindetails")
+        if (file.exists()) {
+           val logindetails = Gson().fromJson(file.readText(), Logindetails::class.java)
+           username = logindetails.username
+           password = logindetails.password
+
+        }
         if (username !="" && password !="") toMainActivity()
     }
 
     private fun saveLogin(){
-        getPreferences(0).edit().putString("username", username).apply()
-        getPreferences(0).edit().putString("password", password).apply()
-        //
-        val usernametest = getPreferences(0).getString("username", "").toString()
-        val passwordtest = getPreferences(0).getString("password", "").toString()
-        Log.d("_login", "username and password saved; " +
-                "username = $usernametest, password = $passwordtest")
+//        getPreferences(0).edit().putString("username", username).apply()
+//        getPreferences(0).edit().putString("password", password).apply()
+//        //
+//        val usernametest = getPreferences(0).getString("username", "").toString()
+//        val passwordtest = getPreferences(0).getString("password", "").toString()
+//        Log.d("_login", "username and password saved; " +
+//                "username = $usernametest, password = $passwordtest")
+
+        val savedlogin = MainActivity.Logindetails(username, password)
+        val file = File(this.filesDir.path.toString() + "logindetails")
+        file.writeText(Gson().toJson(savedlogin))
     }
     private fun toMainActivity(){
         username_edt.setText("")
