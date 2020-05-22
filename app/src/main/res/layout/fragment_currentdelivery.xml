@@ -89,30 +89,41 @@
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/menuitemsholder" />
 
+                    <TextView
+                        android:id="@+id/address"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="right"
+                        android:paddingLeft="16dp"
+                        android:paddingTop="16dp"
+                        android:paddingRight="16dp"
+                        android:text="A-7298, Lorong Alor Akar 72, Taman Cempedak 2, 25050 Kuantan Pahang"
+                        android:textAlignment="textStart" />
+
                     <LinearLayout
-                        android:id="@+id/addressholder"
+                        android:id="@+id/phonelayout"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:orientation="horizontal"
-                        android:padding="16dp"
-                        app:layout_constraintTop_toBottomOf="@+id/divider"
-                        tools:layout_editor_absoluteX="0dp">
+                        android:orientation="horizontal">
 
                         <TextView
-
-                            android:layout_width="120dp"
-                            android:layout_height="wrap_content"
-                            android:layout_marginRight="8dp"
-                            android:layout_weight="1"
-                            android:text="Address" />
-
-                        <TextView
-                            android:id="@+id/address"
+                            android:id="@+id/phonenumber"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:gravity="right"
-                            android:text="A-7298, Lorong Alor Akar 72, Taman Cempedak 2, 25050 Kuantan Pahang" />
+                            android:padding="16dp"
+                            android:text="+6123456" />
+
+                        <com.google.android.material.chip.Chip
+                            android:id="@+id/phonebtn"
+                            android:layout_width="10dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginRight="16dp"
+                            android:layout_weight="1"
+                            android:text="Call"
+                            android:textAlignment="center" />
+
                     </LinearLayout>
 
                 </LinearLayout>

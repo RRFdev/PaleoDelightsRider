@@ -29,79 +29,12 @@ import java.net.URL
 
 
 class CurrentDeliveryViewModel : ViewModel() {
-
     var index = 0
     lateinit var username: String
     lateinit var currentdelivery:MutableList<String>
-
     var currentorderlist = arrayListOf<OrderModel.Order>()
 
-    fun queryRider(callback: (String)->Unit){
-        Log.d("_currentdelivery", "Querying rider $username")
-
-        val db = FirebaseFirestore.getInstance()
-            .collection("riders").document(username)
-
-        db.get()
-            .addOnSuccessListener{
-                //val currentdelivery: List<String>
-
-                //val currentdelivery = it.get("currentdelivery") as String
-                //currentdelivery = it.data?.get("current delivery") as List<String>
-                currentdelivery = it.data?.get("currentdelivery") as MutableList<String>
-
-                val size = currentdelivery.size
-                Log.d("_currentdelivery", "currentdelivery.size ="+currentdelivery.size)
-
-                if (size == 0){
-                    callback("No Delivery")
-                }
-                else{
-                    callback("Delivery Present")
-                }
-
-
-            }
-            .addOnFailureListener{
-                callback ("No Connection")
-            }
-
-
-
-
-    }
-
-    fun queryDelivery(name: String, callback: (String)->Unit){
-        val db = FirebaseFirestore.getInstance()
-            .collection("customer orders").document(name)
-
-        db.get().addOnSuccessListener{
-            val address = it.data?.get("address") as String
-            callback(address)
-        }
-    }
-
-    fun updateDelivery(status:String, number:String, callback:(Boolean)->Unit){
-        val db = FirebaseFirestore.getInstance()
-        db.collection("customer orders").document(number).apply{
-            update("status", status).addOnSuccessListener {
-                callback(true)
-            }.addOnFailureListener{
-                callback(false)
-            }
-            update("rider", "").addOnSuccessListener {
-                callback(true)
-            }.addOnFailureListener{
-                callback(false)
-            }
-        }
-
-
-    }
-
-
-
-    fun queryRider2(callback:(String)->Unit){
+    fun queryDelivery(callback:(String)->Unit){
         //fill out currentdelivery
         val db = FirebaseFirestore.getInstance()
             .collection("customer orders")
@@ -138,5 +71,27 @@ class CurrentDeliveryViewModel : ViewModel() {
 
 
     }
+
+    fun updateDelivery(status:String, number:String, callback:(Boolean)->Unit){
+        val db = FirebaseFirestore.getInstance()
+        db.collection("customer orders").document(number).apply{
+            update("status", status).addOnSuccessListener {
+                callback(true)
+            }.addOnFailureListener{
+                callback(false)
+            }
+            update("rider", "").addOnSuccessListener {
+                callback(true)
+            }.addOnFailureListener{
+                callback(false)
+            }
+        }
+
+
+    }
+
+
+
+
 
 }

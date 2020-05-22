@@ -3,9 +3,11 @@ package com.rrdsolutions.paleodelightsrider.ui.currentdelivery
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Geocoder
 import android.location.Location
+import android.net.Uri
 import android.os.Bundle
 import android.os.Looper
 import android.util.Log
@@ -23,6 +25,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.transition.AutoTransition
 import androidx.transition.Fade
 import androidx.transition.TransitionManager
+import com.afollestad.materialdialogs.MaterialDialog
 import com.google.android.gms.location.*
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -32,6 +35,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
+import com.rrdsolutions.paleodelightsrider.OrderModel
 import com.rrdsolutions.paleodelightsrider.R
 
 import kotlinx.android.synthetic.main.fragment_currentdelivery.*
@@ -47,7 +51,7 @@ class CurrentDeliveryFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMark
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         activity?.findViewById<Toolbar>(R.id.toolbarmain)?.title = "Current Delivery"
-
+        vm = ViewModelProvider(this).get(CurrentDeliveryViewModel::class.java)
 
         return inflater.inflate(R.layout.fragment_currentdelivery, container, false)
     }
@@ -55,9 +59,7 @@ class CurrentDeliveryFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMark
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        Log.d("_currentdelivery", "dot button clicked")
 
-        vm = ViewModelProvider(this).get(CurrentDeliveryViewModel::class.java)
         vm.username = activity?.intent?.getStringExtra("username") as String
         Log.d("_currentdelivery", "username = $vm.username")
 
@@ -113,7 +115,7 @@ class CurrentDeliveryFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMark
             activity?.findViewById<ConstraintLayout>(R.id.loadingscreenmain)?.visibility = View.VISIBLE
             vm.updateDelivery("DELIVERED",vm.currentorderlist[vm.index].number){
                 vm.index = 0
-                vm.queryRider2{ callback->
+                vm.queryDelivery{ callback->
                     when (callback){
                         "Delivery Present"->{
                             loadCurrentDelivery(vm.index)
@@ -132,7 +134,7 @@ class CurrentDeliveryFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMark
             activity?.findViewById<ConstraintLayout>(R.id.loadingscreenmain)?.visibility = View.VISIBLE
             vm.index = 0
             vm.updateDelivery("CANCELED",vm.currentorderlist[vm.index].number){
-                vm.queryRider2{ callback->
+                vm.queryDelivery{ callback->
                     vm.index = 0
                     when (callback){
                         "Delivery Present"->{
@@ -152,27 +154,22 @@ class CurrentDeliveryFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMark
     }
 
     override fun onPause(){
-        //layout.removeAllViews()
         super.onPause()
     }
 
     override fun onResume(){
         super.onResume()
         activity?.findViewById<ConstraintLayout>(R.id.loadingscreenmain)?.visibility = View.VISIBLE
-        //layout.removeAllViews()
 
-        vm.queryRider2(){ callback->
+        vm.queryDelivery(){ callback->
             when (callback){
-                "Delivery Present"->{
-
-                    loadCurrentDelivery(vm.index)
-                }
+                "Delivery Present"-> loadCurrentDelivery(vm.index)
                 "No Delivery"->loadNoDelivery("No deliveries at the moment")
                 "No Connection"->loadNoDelivery("ERROR: Unable to reach database. Please check your online connection")
             }
         }
     }
-    @SuppressLint("SetTextI18n")
+
     fun loadNoDelivery(text:String){
 
         mainlayout.visibility = View.GONE
@@ -198,6 +195,12 @@ class CurrentDeliveryFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMark
         }
 
         address.text = order.address
+
+        phonenumber.text = order.phonenumber
+
+        phonebtn.setOnClickListener{
+            callCustomerDialog(i)
+        }
 
         cardView.setOnClickListener{
             if (hiddenlayout.visibility == View.GONE) {
@@ -243,7 +246,28 @@ class CurrentDeliveryFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMark
 
     }
 
+    fun callCustomerDialog(i:Int){
+        fun makePhoneCall(phonenumber:String){
 
+            val callIntent = Intent(Intent.ACTION_CALL)
+            callIntent.data = Uri.parse("tel:" + phonenumber)
+            startActivity(callIntent)
+        }
+
+        val phonenumber = vm.currentorderlist[i].phonenumber
+        MaterialDialog(this.context as Activity).show {
+            title(text = "Call confirmation")
+            message(text = "Call customer at $phonenumber directly?")
+
+            positiveButton(text = "Proceed"){ dialog ->
+                makePhoneCall(phonenumber)
+            }
+            negativeButton(text = "Cancel"){ dialog ->
+                dismiss()
+            }
+        }
+
+    }
 
     override fun onMapReady(p0: GoogleMap?) {
         fun addDestinationMarker(){}
@@ -304,6 +328,11 @@ class CurrentDeliveryFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMark
         }
 
     }
+
+
+
+
+
 
     override fun onMarkerClick(p0: Marker?): Boolean {
         TODO("Not yet implemented")
