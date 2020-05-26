@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.Toast
 import androidx.core.graphics.toColorInt
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
@@ -50,27 +51,33 @@ class LoginActivity : AppCompatActivity() {
                 when (callback){
                     "login success"->{
                         Log.d("_login", "login success")
-                        status.text = "Login success"
-                        status.setTextColor("#a4c639".toColorInt())
+//                        status.text = "Login success"
+//                        status.setTextColor("#a4c639".toColorInt())
                         if (checkbox.isChecked) saveLogin()
                         toMainActivity()
                     }
                     "password incorrect"->{
                         Log.d("_login", "password incorrect")
-                        status.text = "Password incorrect"
-                        status.setTextColor("#FF0000".toColorInt())
+//                        status.text = "Password incorrect"
+//                        status.setTextColor("#FF0000".toColorInt())
+                        Toast.makeText(this, "Error: Password incorrect",
+                            Toast.LENGTH_LONG).show()
                         vm.visibility.value = View.GONE
                     }
                     "username incorrect"->{
                         Log.d("_login", "username incorrect")
-                        status.text = "Username incorrect"
-                        status.setTextColor("#FF0000".toColorInt())
+//                        status.text = "Username incorrect"
+//                        status.setTextColor("#FF0000".toColorInt())
+                        Toast.makeText(this, "Error: Username incorrect",
+                            Toast.LENGTH_LONG).show()
                         vm.visibility.value = View.GONE
                     }
                     "login fail"->{
                         Log.d("_login", "login fail")
-                        status.text = "Login failed"
-                        status.setTextColor("#FF0000".toColorInt())
+//                        status.text = "Login failed"
+//                        status.setTextColor("#FF0000".toColorInt())
+                        Toast.makeText(this, "Login failed. Please check your internet connection and try again.",
+                        Toast.LENGTH_LONG).show()
                         vm.visibility.value = View.GONE
                     }
                 }
@@ -132,7 +139,7 @@ class LoginActivity : AppCompatActivity() {
     private fun toMainActivity(){
         username_edt.setText("")
         password_edt.setText("")
-        status.text = ""
+        //status.text = ""
 
         val intent = Intent(this, MainActivity::class.java).apply {
             putExtra("username", username)

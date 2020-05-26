@@ -12,14 +12,12 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.appcompat.widget.PopupMenu
 import androidx.appcompat.widget.Toolbar
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.Navigation
 import androidx.transition.AutoTransition
 import androidx.transition.Fade
 import androidx.transition.TransitionManager
@@ -28,8 +26,7 @@ import com.google.android.gms.maps.*
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.rrdsolutions.paleodelightsrider.R
-import kotlinx.android.synthetic.main.fragment_pendingdelivery2.*
-import kotlinx.android.synthetic.main.fragment_pendingdelivery2.view.*
+import kotlinx.android.synthetic.main.fragment_pendingdelivery.*
 import kotlinx.android.synthetic.main.menuitemstext.view.*
 
 
@@ -46,7 +43,7 @@ class PendingDeliveryFragment : Fragment(){
 
 
 
-        val root = activity?.layoutInflater?.inflate(R.layout.fragment_pendingdelivery2, container, false)
+        val root = activity?.layoutInflater?.inflate(R.layout.fragment_pendingdelivery, container, false)
         return root
     }
     override fun onDestroyView(){

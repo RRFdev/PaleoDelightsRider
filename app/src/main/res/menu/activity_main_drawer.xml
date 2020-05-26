@@ -12,15 +12,5 @@
             android:id="@+id/nav_pendingdelivery"
             android:icon="@drawable/ic_menu_slideshow"
             android:title="Pending Delivery" />
-
-        <item
-            android:id="@+id/nav_verifydelivery"
-            android:icon="@drawable/ic_menu_slideshow"
-            android:title="Verify Delivery" />
-<!--        <item-->
-<!--            android:id="@+id/nav_logout"-->
-<!--            android:icon="@drawable/ic_menu_slideshow"-->
-<!--            android:title="Log out" />-->
-
     </group>
 </menu>

@@ -2,13 +2,12 @@
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     >
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/myShade"
@@ -29,8 +28,7 @@
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                >
+                android:layout_height="wrap_content">
 
                 <LinearLayout
                     android:id="@+id/linearLayout2"
@@ -48,6 +46,7 @@
                         android:id="@+id/username"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:paddingBottom="8dp"
                         android:text="Username"
                         android:textAppearance="@style/TextAppearance.AppCompat.Medium"
                         android:textColor="#000000" />
@@ -56,8 +55,10 @@
                         android:id="@+id/username_edt"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:background="@drawable/round"
                         android:ems="10"
                         android:inputType="textPersonName"
+                        android:padding="8dp"
                         android:textSize="16sp" />
                 </LinearLayout>
 
@@ -66,7 +67,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
-                    android:layout_marginTop="24dp"
+                    android:layout_marginTop="16dp"
                     android:layout_marginEnd="16dp"
                     android:orientation="vertical"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -77,6 +78,7 @@
                         android:id="@+id/textView9"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:paddingBottom="8dp"
                         android:text="Password"
                         android:textAppearance="@style/TextAppearance.AppCompat.Medium"
                         android:textColor="#000000" />
@@ -85,8 +87,10 @@
                         android:id="@+id/password_edt"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:background="@drawable/round"
                         android:ems="10"
                         android:inputType="textPassword"
+                        android:padding="8dp"
                         android:textSize="16sp" />
                 </LinearLayout>
 
@@ -98,7 +102,7 @@
                     android:layout_marginTop="16dp"
                     android:layout_marginBottom="16dp"
                     android:text="Save login"
-                    app:layout_constraintBottom_toTopOf="@+id/loginbutton"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
 
@@ -106,21 +110,14 @@
                     android:id="@+id/loginbutton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
                     android:layout_marginEnd="16dp"
-                    android:layout_marginBottom="8dp"
+                    android:layout_marginBottom="16dp"
                     android:text="Log in"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent" />
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
 
-                <TextView
-                    android:id="@+id/status"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:textSize="16sp"
-                    app:layout_constraintBottom_toBottomOf="@+id/loginbutton"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="@+id/loginbutton" />
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.cardview.widget.CardView>
 

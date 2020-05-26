@@ -20,29 +20,10 @@
         android:id="@+id/nav_pendingdelivery"
         android:name="com.rrdsolutions.paleodelightsrider.ui.pendingdelivery.PendingDeliveryFragment"
         android:label="Pending Delivery"
-        tools:layout="@layout/fragment_pendingdelivery2" >
-        <action
-            android:id="@+id/action_verify"
-            app:destination="@id/nav_verifydelivery" />
+        tools:layout="@layout/fragment_pendingdelivery" >
         <action
             android:id="@+id/nav_backtocurrent"
             app:destination="@id/nav_currentdelivery" />
     </fragment>
 
-
-
-
-    <!--            app:popUpTo=""-->
-
-    <fragment
-        android:id="@+id/nav_verifydelivery"
-        android:name="com.rrdsolutions.paleodelightsrider.ui.verifydelivery.VerifyDeliveryFragment"
-        android:label="Verify Delivery"
-        tools:layout="@layout/fragment_verifydelivery" >
-        <action
-            android:id="@+id/action_pickup"
-            app:destination="@id/nav_currentdelivery"
-            app:popUpTo="@id/nav_verifydelivery"
-            app:popUpToInclusive="true" />
-    </fragment>
 </navigation>

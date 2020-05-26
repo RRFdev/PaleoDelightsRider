@@ -11,9 +11,6 @@ object OrderModel {
         var address:String,
         var status: String
     )
-    lateinit var order:Order
 
-    var pendingorderlist = arrayListOf<OrderModel.Order>()
-    lateinit var currentorder:Order
 
 }
