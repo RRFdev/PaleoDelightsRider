@@ -20,10 +20,13 @@
         android:id="@+id/nav_pendingdelivery"
         android:name="com.rrdsolutions.paleodelightsrider.ui.pendingdelivery.PendingDeliveryFragment"
         android:label="Pending Delivery"
-        tools:layout="@layout/fragment_pendingdelivery" >
+        tools:layout="@layout/fragment_pendingdelivery2" >
         <action
             android:id="@+id/action_verify"
             app:destination="@id/nav_verifydelivery" />
+        <action
+            android:id="@+id/nav_backtocurrent"
+            app:destination="@id/nav_currentdelivery" />
     </fragment>
 
 

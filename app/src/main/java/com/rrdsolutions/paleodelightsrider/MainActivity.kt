@@ -27,7 +27,7 @@ import kotlinx.android.synthetic.main.testtext.*
 import kotlinx.android.synthetic.main.testtext.view.*
 import java.io.File
 
-class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
+class MainActivity : AppCompatActivity() {
     lateinit var appBarConfiguration: AppBarConfiguration
     lateinit var vm:MainViewModel
 
@@ -56,7 +56,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         //val navController = findNavController(R.id.nav_host_fragment)
 
         appBarConfiguration = AppBarConfiguration(setOf(
-                R.id.nav_currentdelivery, R.id.nav_pendingdelivery), drawerLayout)
+                R.id.nav_currentdelivery, R.id.nav_pendingdelivery, R.id.nav_verifydelivery), drawerLayout)
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
 
@@ -122,15 +122,14 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 //        this.startActivity(a)
 //    }
 
-    override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        when (item.itemId){
-            R.id.nav_currentdelivery->{}
-            R.id.nav_pendingdelivery->{}
-
-        }
-        drawer.closeDrawer(GravityCompat.START)
-        return true
-    }
+//    override fun onNavigationItemSelected(item: MenuItem): Boolean {
+////        when (item.itemId){
+////            R.id.nav_currentdelivery->{}
+////            R.id.nav_pendingdelivery->{}
+////        }
+////        drawer.closeDrawer(GravityCompat.START)
+////        return true
+//    }
 
 }
 

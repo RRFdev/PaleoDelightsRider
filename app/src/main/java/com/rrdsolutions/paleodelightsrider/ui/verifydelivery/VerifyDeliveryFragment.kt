@@ -50,10 +50,16 @@ class VerifyDeliveryFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         vm = ViewModelProvider(this).get(VerifyDeliveryViewModel::class.java)
         activity?.findViewById<ConstraintLayout>(R.id.loadingscreen)?.visibility = View.VISIBLE
-        vm.index = activity?.getPreferences(0)?.getInt("index", 0)!!
+        //vm.index = activity?.getPreferences(0)?.getInt("index", 0)!!
         //vm.index = arguments?.getInt("index") as Int
-
-        buildCard(vm.index)
+        vm.queryRider{callback->
+            when (callback){
+                "Delivery Present"-> buildCard(0)
+                "No Delivery"->buildCard(0)
+                "No Connection"->buildCard(0)
+            }
+        }
+        buildCard(0)
 
         cardView.setOnClickListener{
             if (hiddenlayout.visibility == View.GONE) {
@@ -110,7 +116,7 @@ class VerifyDeliveryFragment : Fragment() {
 
     private val callbackCustomerLocation = OnMapReadyCallback { googleMap ->
 
-        val sydney = coordinate
+
         googleMap.addMarker(MarkerOptions().position(coordinate).title("Customer Location")).showInfoWindow()
         //googleMap.moveCamera(CameraUpdateFactory.newLatLng(sydney))
         googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(coordinate, 18f))
@@ -143,7 +149,8 @@ class VerifyDeliveryFragment : Fragment() {
     }
 
     fun buildCard(i: Int){
-        val order = OrderModel.pendingorderlist[i]
+        //val order = OrderModel.pendingorderlist[i]
+        val order = vm.pendingorderlist[i]
         number.text = order.number
         for (u in 0 until order.itemlist.size){
             val menuitemstext = layoutInflater.inflate(R.layout.menuitemstext, null)

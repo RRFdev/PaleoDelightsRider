@@ -5,23 +5,20 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.rrdsolutions.paleodelightsrider.OrderModel
 
 @Suppress("UNCHECKED_CAST")
-class PendingDeliveryViewModel2 : ViewModel() {
-    var index = 0
-    lateinit var username: String
-    lateinit var pendingdelivery:MutableList<String>
-    var pendingorderlist = arrayListOf<OrderModel.Order>()
+class PendingDeliveryViewModel3 : ViewModel() {
 
-    fun queryRider(callback:(String)->Unit){
+    fun queryPendingDelivery(callback:(String)->Unit){
+
         val db = FirebaseFirestore.getInstance()
             .collection("customer orders")
-            .whereEqualTo("rider", "")
             .whereEqualTo("status", "IN PROGRESS")
 
         db.get()
-            .addOnSuccessListener{documents->
+            .addOnSuccessListener{ documents->
+
                 if (documents.size() == 0) callback("No Delivery")
                 else{
-                    pendingorderlist = arrayListOf<OrderModel.Order>()
+                    OrderModel.pendingorderlist = arrayListOf<OrderModel.Order>()
                     for (document in documents){
                         val order = OrderModel.Order(
                             document.id,
@@ -32,14 +29,17 @@ class PendingDeliveryViewModel2 : ViewModel() {
                             document.data["address"] as String,
                             document.data["status"] as String
                         )
-                        pendingorderlist.add(order)
+                        OrderModel.pendingorderlist.add(order)
                     }
+
                     callback("Delivery Present")
                 }
+
+
             }
             .addOnFailureListener{
                 callback("No Connection")
             }
-    }
 
+    }
 }

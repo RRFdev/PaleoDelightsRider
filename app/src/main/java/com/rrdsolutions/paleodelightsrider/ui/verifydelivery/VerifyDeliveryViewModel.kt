@@ -13,31 +13,37 @@ class VerifyDeliveryViewModel: ViewModel() {
     lateinit var coordinate:LatLng
     var index = 0
 
-    fun pickupDelivery(i:Int){
+    var pendingorderlist = arrayListOf<OrderModel.Order>()
 
-//        val number = OrderModel.pendingorderlist[i].number
-//        //val username = activity?.intent?.getStringExtra("username") as String
-//        val db = FirebaseFirestore.getInstance()
-//
-//        //update customer order
-//        db.collection("customer orders").document(number).apply{
-//            update("rider", username)
-//            update("status", "IN DELIVERY")
-//            //default "IN PROGRESS"
-//        }
-//        //update rider profile
-//        db.collection("riders").document(username).get()
-//            .addOnSuccessListener{
-//                val currentdelivery = it.data?.get("currentdelivery") as MutableList<String>
-//                var size = currentdelivery.size
-//                Log.d("_verify", "currentdelivery.size = $size")
-//                currentdelivery.add(number)
-//                size = currentdelivery.size
-//                Log.d("_verify", "currentdelivery.size after adding = $size")
-//                db.collection("riders").document(username).update("currentdelivery", currentdelivery)
-//
-//            }
+    fun queryRider(callback:(String)->Unit){
+        val db = FirebaseFirestore.getInstance()
+            .collection("customer orders")
+            .whereEqualTo("rider", "")
+            .whereEqualTo("status", "IN PROGRESS")
 
+        db.get()
+            .addOnSuccessListener{documents->
+                if (documents.size() == 0) callback("No Delivery")
+                else{
+                    pendingorderlist = arrayListOf<OrderModel.Order>()
+                    for (document in documents){
+                        val order = OrderModel.Order(
+                            document.id,
+                            document.data["phonenumber"] as String,
+                            document.data["time"] as String,
+                            document.data["eta"] as String,
+                            document.data["itemlist"] as List<String>,
+                            document.data["address"] as String,
+                            document.data["status"] as String
+                        )
+                        pendingorderlist.add(order)
+                    }
+                    callback("Delivery Present")
+                }
+            }
+            .addOnFailureListener{
+                callback("No Connection")
+            }
     }
 
 }
