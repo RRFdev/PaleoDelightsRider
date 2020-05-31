@@ -1,5 +1,5 @@
 # PaleoDelightsRider
-This is demo app for delivery riders, meant to be used together with [Paleo Delights](https://github.com/pawaka2020/PaleoDelights).
+This is a demo app for delivery riders, meant to be used together with [Paleo Delights](https://github.com/pawaka2020/PaleoDelights).
 
 ## Stacks / templates used:
 
