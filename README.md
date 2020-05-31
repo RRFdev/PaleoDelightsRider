@@ -23,7 +23,7 @@ Then upon logging in, the user is presented with the current delivery screen as 
 
 The current delivery screen displays the delivery location for the orders that the rider had marked for pickup as well as the rider's current location. Normally the [Directions API](https://developers.google.com/maps/documentation/directions/start#Waypoints) would be used for this purpose, but due to the need to only use free solutions for this demo app, an alternative solution has been made to provide a close approximation to the desired function.
 
-The use can then either tap to mark the order as 'Delivered' or 'Canceled' and an update is sent to the orders databaes in Firebase Firestore, and is then queried and displayed on the Paleo Delights app afterward.
+The use can then either tap to mark the order as 'Delivered' or 'Canceled' and an update is sent to the orders database in Firebase Firestore, and is then queried and displayed on the Paleo Delights app afterward.
 
 ![image](https://user-images.githubusercontent.com/40174427/83357907-04df6480-a3a2-11ea-8b75-669c1c07b88c.png)
 
