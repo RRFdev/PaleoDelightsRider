@@ -27,7 +27,7 @@ The use can then either tap to mark the order as 'Delivered' or 'Canceled' and a
 
 ![image](https://user-images.githubusercontent.com/40174427/83357907-04df6480-a3a2-11ea-8b75-669c1c07b88c.png)
 
-Buttons have also been added onto the map to aid in browsing between multiple current deliveries. The order CardView can also be tappeed to expand and display further details, as well as a small button to call the customer for inquiries.
+Buttons have also been added onto the map to aid in browsing between multiple current deliveries. The order CardView can also be tapped to expand and display further details, as well as a small button to call the customer for inquiries.
 
 ![image](https://user-images.githubusercontent.com/40174427/83357297-28081500-a39e-11ea-9f2e-daf74c996d35.png)
 
