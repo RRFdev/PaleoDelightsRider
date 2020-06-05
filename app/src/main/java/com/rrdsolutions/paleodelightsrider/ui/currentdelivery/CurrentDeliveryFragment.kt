@@ -46,7 +46,6 @@ class CurrentDeliveryFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMark
     private lateinit var vm: CurrentDeliveryViewModel
     lateinit var map: GoogleMap
     lateinit var fusedLocationClient: FusedLocationProviderClient
-    lateinit var lastLocation: Location
     lateinit var destiLoc:LatLng
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -111,7 +110,6 @@ class CurrentDeliveryFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMark
         }
 
         deliverbtn.setOnClickListener{
-            //val name = vm.currentorderlist[vm.index].number
             activity?.findViewById<ConstraintLayout>(R.id.loadingscreenmain)?.visibility = View.VISIBLE
             vm.updateDelivery("DELIVERED",vm.currentorderlist[vm.index].number){
                 vm.index = 0
@@ -228,8 +226,6 @@ class CurrentDeliveryFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMark
             activity?.findViewById<ConstraintLayout>(R.id.loadingscreenmain)?.visibility = View.GONE
         }
 
-        //layout.addView(currentdeliverylayout)
-
     }
 
     fun getCoordinate(address:String, callback:(LatLng)->Unit){
@@ -270,13 +266,10 @@ class CurrentDeliveryFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMark
     }
 
     override fun onMapReady(p0: GoogleMap?) {
-        fun addDestinationMarker(){}
         map = p0!!
         map.uiSettings.isZoomControlsEnabled = true
         map.clear()
 
-        //declare this Fragment as target when user clicks marker
-        //map.setOnMarkerClickListener(this)
         if (ActivityCompat.checkSelfPermission(this.context as Activity, Manifest.permission.ACCESS_FINE_LOCATION)
             != PackageManager.PERMISSION_GRANTED
             && ActivityCompat.checkSelfPermission(this.context as Activity, Manifest.permission.ACCESS_COARSE_LOCATION)

@@ -41,8 +41,6 @@ class PendingDeliveryFragment : Fragment(){
         activity?.findViewById<Toolbar>(R.id.toolbarmain)?.title = "Pending Delivery"
 
 
-
-
         val root = activity?.layoutInflater?.inflate(R.layout.fragment_pendingdelivery, container, false)
         return root
     }
