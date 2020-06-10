@@ -1,42 +1,21 @@
 package com.rrdsolutions.paleodelightsrider.ui.currentdelivery
 
-import android.app.Activity
-import android.content.Context
-import android.graphics.Color
-import android.location.Geocoder
-import android.os.AsyncTask
 import android.util.Log
-import android.widget.TextView
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.PolylineOptions
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.ktx.getField
-import com.google.maps.android.PolyUtil
-import com.rrdsolutions.paleodelightsrider.OrderModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import retrofit2.Call
-import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.http.GET
-import retrofit2.http.Query
-import java.net.URL
+import com.google.firebase.firestore.ktx.firestoreSettings
+import com.rrdsolutions.paleodelightsrider.Order
 
 
 class CurrentDeliveryViewModel : ViewModel() {
     var index = 0
     lateinit var username: String
-    lateinit var currentdelivery:MutableList<String>
-    var currentorderlist = arrayListOf<OrderModel.Order>()
+    var currentorderlist = arrayListOf<Order>()
 
     fun queryDelivery(callback:(String)->Unit){
-        //fill out currentdelivery
+
         val db = FirebaseFirestore.getInstance()
+            .apply{ firestoreSettings = firestoreSettings{isPersistenceEnabled = false} }
             .collection("customer orders")
             .whereEqualTo("rider", username)
         db.get()
@@ -44,9 +23,9 @@ class CurrentDeliveryViewModel : ViewModel() {
                 Log.d("_currentdelivery", "size = "+documents.size())
                 if (documents.size() == 0) callback("No Delivery")
                 else{
-                    currentorderlist = arrayListOf<OrderModel.Order>()
+                    currentorderlist = arrayListOf<Order>()
                     for (document in documents){
-                        val order = OrderModel.Order(
+                        val order = Order(
                             document.id,
                             document.data["phonenumber"] as String,
                             document.data["time"] as String,
@@ -61,37 +40,30 @@ class CurrentDeliveryViewModel : ViewModel() {
                     callback("Delivery Present")
                 }
 
-
             }
             .addOnFailureListener{
                 callback("No Connection")
             }
 
-
-
-
     }
 
     fun updateDelivery(status:String, number:String, callback:(Boolean)->Unit){
         val db = FirebaseFirestore.getInstance()
-        db.collection("customer orders").document(number).apply{
-            update("status", status).addOnSuccessListener {
-                callback(true)
-            }.addOnFailureListener{
-                callback(false)
-            }
-            update("rider", "").addOnSuccessListener {
-                callback(true)
-            }.addOnFailureListener{
-                callback(false)
-            }
-        }
+            .apply{ firestoreSettings = firestoreSettings{isPersistenceEnabled = false} }
+            .collection("customer orders").document(number)
 
+        db.run{
+            update("status", status)
+            update("rider", "")
+        }
+            .addOnSuccessListener{
+                currentorderlist = arrayListOf()
+                callback(true)
+            }
+            .addOnFailureListener{
+                callback(false)
+            }
 
     }
-
-
-
-
 
 }

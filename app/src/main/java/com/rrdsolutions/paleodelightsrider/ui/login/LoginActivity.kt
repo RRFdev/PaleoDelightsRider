@@ -16,9 +16,13 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.gson.Gson
 import com.rrdsolutions.paleodelightsrider.MainActivity
 import com.rrdsolutions.paleodelightsrider.R
+import com.tozny.crypto.android.AesCbcWithIntegrity
+import com.tozny.crypto.android.AesCbcWithIntegrity.*
 import kotlinx.android.synthetic.main.activity_login.*
 import java.io.File
-
+import java.security.SecureRandom
+import javax.crypto.KeyGenerator
+import javax.crypto.SecretKey
 
 
 class LoginActivity : AppCompatActivity() {
@@ -32,11 +36,19 @@ class LoginActivity : AppCompatActivity() {
         val password:String
     )
 
+    data class Logindetails2(
+        val username: String,
+
+        val encryptedpassword: String,
+        val key: SecretKeys
+    )
+
     @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
         FirebaseApp.initializeApp(this)
+
         vm = ViewModelProvider(this).get(LoginViewModel::class.java)
 
         loginbutton.setOnClickListener{
@@ -51,31 +63,23 @@ class LoginActivity : AppCompatActivity() {
                 when (callback){
                     "login success"->{
                         Log.d("_login", "login success")
-//                        status.text = "Login success"
-//                        status.setTextColor("#a4c639".toColorInt())
                         if (checkbox.isChecked) saveLogin()
                         toMainActivity()
                     }
                     "password incorrect"->{
                         Log.d("_login", "password incorrect")
-//                        status.text = "Password incorrect"
-//                        status.setTextColor("#FF0000".toColorInt())
                         Toast.makeText(this, "Error: Password incorrect",
                             Toast.LENGTH_LONG).show()
                         vm.visibility.value = View.GONE
                     }
                     "username incorrect"->{
                         Log.d("_login", "username incorrect")
-//                        status.text = "Username incorrect"
-//                        status.setTextColor("#FF0000".toColorInt())
                         Toast.makeText(this, "Error: Username incorrect",
                             Toast.LENGTH_LONG).show()
                         vm.visibility.value = View.GONE
                     }
                     "login fail"->{
                         Log.d("_login", "login fail")
-//                        status.text = "Login failed"
-//                        status.setTextColor("#FF0000".toColorInt())
                         Toast.makeText(this, "Login failed. Please check your internet connection and try again.",
                         Toast.LENGTH_LONG).show()
                         vm.visibility.value = View.GONE
@@ -97,56 +101,75 @@ class LoginActivity : AppCompatActivity() {
         checkLogin()
     }
 
-
     override fun onBackPressed() {
         super.onBackPressed()
 
         val a = Intent(Intent.ACTION_MAIN)
         a.addCategory(Intent.CATEGORY_HOME)
         a.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-        //a.flags= Intent.FLAG_ACTIVITY_CLEAR_TOP
+
         this.startActivity(a)
     }
 
     private fun checkLogin(){
-//        username = getPreferences(0).getString("username", "").toString()
-//        password = getPreferences(0).getString("password", "").toString()
-//        Log.d("_login", "username = $username, password = $password")
-//
+
+        //decrypt here
+
+
         val file = File(this.filesDir.path.toString() + "logindetails")
         if (file.exists()) {
            val logindetails = Gson().fromJson(file.readText(), Logindetails::class.java)
            username = logindetails.username
            password = logindetails.password
-
         }
         if (username !="" && password !="") toMainActivity()
     }
 
     private fun saveLogin(){
-//        getPreferences(0).edit().putString("username", username).apply()
-//        getPreferences(0).edit().putString("password", password).apply()
-//        //
-//        val usernametest = getPreferences(0).getString("username", "").toString()
-//        val passwordtest = getPreferences(0).getString("password", "").toString()
-//        Log.d("_login", "username and password saved; " +
-//                "username = $usernametest, password = $passwordtest")
-
-        val savedlogin = MainActivity.Logindetails(username, password)
         val file = File(this.filesDir.path.toString() + "logindetails")
+
+        val savedlogin = Logindetails(username, password)
         file.writeText(Gson().toJson(savedlogin))
+
+        //encrypt here
+
+        //val savedlogin = encrypt()
+        //file.writeText(encryptSavedLogin())
+
+        //encryptedlogin = ""
+        //file.writeText(encryptedlogin)
+
+
     }
+
     private fun toMainActivity(){
         username_edt.setText("")
         password_edt.setText("")
-        //status.text = ""
 
         val intent = Intent(this, MainActivity::class.java).apply {
             putExtra("username", username)
         }
         startActivity(intent)
         Log.d("_login", "moving to MainActivity")
+    }
+
+    fun encryptSavedLogin(): String{
+        val key = generateKeyFromPassword(password, saltString(generateSalt()))
+        val encryptedpassword = encrypt(password, key).toString()
+        val logindetails2 = Logindetails2(username, encryptedpassword, key)
+        val result = Gson().toJson(logindetails2)
+
+        return result
+    }
+
+    fun decrypt(string:String){
+        val logindetails2 = Gson().fromJson(string, Logindetails2::class.java)
+        val encryptedpassword = logindetails2.encryptedpassword
+        val key = logindetails2.key
+        password = decryptString(CipherTextIvMac(encryptedpassword), key)
+        username = logindetails2.username
 
     }
+
 }
 

@@ -1,7 +1,5 @@
 package com.rrdsolutions.paleodelightsrider.ui.pendingdelivery
 
-//import kotlinx.android.synthetic.main.fragment_currentdelivery.*
-
 import android.app.Activity
 import android.content.Intent
 import android.location.Geocoder
@@ -12,12 +10,14 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.appcompat.widget.PopupMenu
 import androidx.appcompat.widget.Toolbar
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.Navigation
 import androidx.transition.AutoTransition
 import androidx.transition.Fade
 import androidx.transition.TransitionManager
@@ -29,28 +29,16 @@ import com.rrdsolutions.paleodelightsrider.R
 import kotlinx.android.synthetic.main.fragment_pendingdelivery.*
 import kotlinx.android.synthetic.main.menuitemstext.view.*
 
-
 class PendingDeliveryFragment : Fragment(){
     private lateinit var vm: PendingDeliveryViewModel
     lateinit var coordinate: LatLng
 
-
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         vm = ViewModelProvider(this).get(PendingDeliveryViewModel::class.java)
         activity?.findViewById<Toolbar>(R.id.toolbarmain)?.title = "Pending Delivery"
-
-
         val root = activity?.layoutInflater?.inflate(R.layout.fragment_pendingdelivery, container, false)
         return root
     }
-    override fun onDestroyView(){
-        super.onDestroyView()
-
-
-    }
-
-
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -65,12 +53,8 @@ class PendingDeliveryFragment : Fragment(){
 
             })
         }
-
-        //mapFragment = (activity?.supportFragmentManager?.findFragmentById(R.id.map) as SupportMapFragment?)!!
         leftbutton.setOnClickListener{
-            //mapholder.visibility = View.VISIBLE
             errorcard.visibility = View.GONE
-            //activity?.findViewById<ConstraintLayout>(R.id.loadingscreenmain)?.visibility = View.VISIBLE
             if (vm.index != 0) {
                 vm.index--
             }
@@ -81,9 +65,7 @@ class PendingDeliveryFragment : Fragment(){
         }
 
         rightbutton.setOnClickListener{
-           // mapholder.visibility = View.VISIBLE
             errorcard.visibility = View.GONE
-            //activity?.findViewById<ConstraintLayout>(R.id.loadingscreenmain)?.visibility = View.VISIBLE
             if (vm.index == (vm.pendingorderlist.size-1)){
                 vm.index = 0
 
@@ -99,9 +81,7 @@ class PendingDeliveryFragment : Fragment(){
                 val onclick = MenuItem.OnMenuItemClickListener {
                     when (it.title){
                         vm.pendingorderlist[i].number->{
-                            //mapholder.visibility = View.VISIBLE
                             errorcard.visibility = View.GONE
-                            //activity?.findViewById<ConstraintLayout>(R.id.loadingscreenmain)?.visibility = View.VISIBLE
                             loadPendingDelivery(i)
                         }
                     }
@@ -121,24 +101,19 @@ class PendingDeliveryFragment : Fragment(){
         }
 
         pickupbtn.setOnClickListener{
-//            if(errorcard.visibility == View.GONE){
-//                vm.updateDelivery(vm.pendingorderlist[vm.index].number){callback->
-//                    if (callback){
-//                        Toast.makeText(this.context as Activity, vm.pendingorderlist[vm.index].number + "marked for delivery", Toast.LENGTH_SHORT).show()
-//                        view.let { Navigation.findNavController(it).navigate(R.id.nav_backtocurrent) }
-//                    }
-//                    else{
-//                        //mapholder.visibility = View.GONE
-//                        errorcard.visibility = View.VISIBLE
-//                        notificationtext2.text = "Delivery update failed. Please check your online connection and retry."
-//                    }
-//                }
-//            }
+            if(errorcard.visibility == View.GONE){
+                vm.updateDelivery(vm.pendingorderlist[vm.index].number){callback->
+                    if (callback){
+                        Toast.makeText(this.context as Activity, vm.pendingorderlist[vm.index].number + "marked for delivery", Toast.LENGTH_SHORT).show()
+                        view.let { Navigation.findNavController(it).navigate(R.id.nav_backtocurrent) }
+                    }
+                    else{
+                        Toast.makeText(this.context as Activity, "Delivery update failed. Please check your online connection and retry.", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
 
-
-
-
-            //activity?.findViewById<ConstraintLayout>(R.id.loadingscreen)?.visibility = View.GONE
+            activity?.findViewById<ConstraintLayout>(R.id.loadingscreen)?.visibility = View.GONE
 
         }
 
@@ -149,12 +124,8 @@ class PendingDeliveryFragment : Fragment(){
 
     override fun onPause(){
         super.onPause()
-        //map.onPause()
-        //fragmentTransaction.remove(mMapFragment)
         map.onPause()
-
     }
-
 
     override fun onResume() {
         super.onResume()
@@ -171,12 +142,14 @@ class PendingDeliveryFragment : Fragment(){
 
 
     }
+
     fun loadNoDelivery(text:String){
         mainlayout.visibility = View.GONE
         notificationlayout.visibility = View.VISIBLE
         notificationtext.text = text
         activity?.findViewById<ConstraintLayout>(R.id.loadingscreenmain)?.visibility = View.GONE
     }
+
     fun loadPendingDelivery(i:Int){
         mainlayout.visibility = View.VISIBLE
         notificationlayout.visibility = View.GONE
@@ -222,11 +195,6 @@ class PendingDeliveryFragment : Fragment(){
                 errorcard.visibility = View.GONE
                 Log.d("_pending", "callback requested")
                 Log.d("_pending", "2coordinate = " + coordinate)
-
-                //var mapa =  (activity?.supportFragmentManager?.findFragmentById(R.id.mapa) as SupportMapFragment?)
-
-
-
                 activity?.findViewById<ConstraintLayout>(R.id.loadingscreen)?.visibility = View.GONE
             }
             else{
@@ -237,15 +205,6 @@ class PendingDeliveryFragment : Fragment(){
 
         }
 
-
-    }
-
-
-
-    val callbackCustomerLocation = OnMapReadyCallback { googleMap ->
-        Log.d("_pending", "callback requested2")
-        googleMap.addMarker(MarkerOptions().position(coordinate).title("Customer Location")).showInfoWindow()
-        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(coordinate, 18f))
     }
 
     fun getCoordinate(i: Int, locationFound:(Boolean)->Unit){
@@ -289,12 +248,6 @@ class PendingDeliveryFragment : Fragment(){
         }
 
     }
-
-    fun moveToCurrentDelivery(){
-
-    }
-
-
 
 
 }

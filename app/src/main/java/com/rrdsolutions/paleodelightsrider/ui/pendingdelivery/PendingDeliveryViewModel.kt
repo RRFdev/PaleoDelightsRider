@@ -5,7 +5,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.firestore.FirebaseFirestore
-import com.rrdsolutions.paleodelightsrider.OrderModel
+import com.google.firebase.firestore.ktx.firestoreSettings
+import com.rrdsolutions.paleodelightsrider.Order
+
 
 @Suppress("UNCHECKED_CAST")
 class PendingDeliveryViewModel : ViewModel() {
@@ -13,7 +15,7 @@ class PendingDeliveryViewModel : ViewModel() {
     var index = 0
     lateinit var username: String
     lateinit var pendingdelivery:MutableList<String>
-    var pendingorderlist = arrayListOf<OrderModel.Order>()
+    var pendingorderlist = arrayListOf<Order>()
 
     val coordinate = MutableLiveData<LatLng>().apply{
         value = LatLng(0.0,0.0)
@@ -21,6 +23,7 @@ class PendingDeliveryViewModel : ViewModel() {
 
     fun queryRider(callback:(String)->Unit){
         val db = FirebaseFirestore.getInstance()
+            .apply{ firestoreSettings = firestoreSettings{isPersistenceEnabled = false} }
             .collection("customer orders")
             .whereEqualTo("rider", "")
             .whereEqualTo("status", "IN PROGRESS")
@@ -29,9 +32,9 @@ class PendingDeliveryViewModel : ViewModel() {
             .addOnSuccessListener{documents->
                 if (documents.size() == 0) callback("No Delivery")
                 else{
-                    pendingorderlist = arrayListOf<OrderModel.Order>()
+                    pendingorderlist = arrayListOf<Order>()
                     for (document in documents){
-                        val order = OrderModel.Order(
+                        val order = Order(
                             document.id,
                             document.data["phonenumber"] as String,
                             document.data["time"] as String,
@@ -52,18 +55,16 @@ class PendingDeliveryViewModel : ViewModel() {
 
     fun updateDelivery(number:String, callback:(Boolean)->Unit){
         val db = FirebaseFirestore.getInstance()
+            .apply{ firestoreSettings = firestoreSettings{isPersistenceEnabled = false} }
         db.collection("customer orders").document(number)
             .update("rider", username)
             .addOnSuccessListener{
+                pendingorderlist = arrayListOf()
                 callback(true)
             }
             .addOnFailureListener{
                 callback(false)
             }
     }
-
-
-
-
 
 }

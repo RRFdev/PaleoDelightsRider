@@ -35,13 +35,12 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
-import com.rrdsolutions.paleodelightsrider.OrderModel
 import com.rrdsolutions.paleodelightsrider.R
 
 import kotlinx.android.synthetic.main.fragment_currentdelivery.*
 import kotlinx.android.synthetic.main.menuitemstext.view.*
 
-class CurrentDeliveryFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
+class CurrentDeliveryFragment : Fragment(), OnMapReadyCallback {
 
     private lateinit var vm: CurrentDeliveryViewModel
     lateinit var map: GoogleMap
@@ -83,7 +82,6 @@ class CurrentDeliveryFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMark
             }
             loadCurrentDelivery(vm.index)
         }
-
         dotbutton.setOnClickListener{
 
             fun menuClicked(i:Int):MenuItem.OnMenuItemClickListener{
@@ -108,7 +106,6 @@ class CurrentDeliveryFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMark
             Log.d("_current", "dot button clicked")
             popupMenu.show()
         }
-
         deliverbtn.setOnClickListener{
             activity?.findViewById<ConstraintLayout>(R.id.loadingscreenmain)?.visibility = View.VISIBLE
             vm.updateDelivery("DELIVERED",vm.currentorderlist[vm.index].number){
@@ -119,7 +116,6 @@ class CurrentDeliveryFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMark
                             loadCurrentDelivery(vm.index)
                             Toast.makeText(this.context as Activity, vm.currentorderlist[vm.index].number+ " delivered", Toast.LENGTH_SHORT)
                                 .show()
-                            //Toast.makeText(this, "hsadsa", Toast.LENGTH_SHORT)
                         }
                         "No Delivery"->loadNoDelivery("No deliveries at the moment")
                         "No Connection"->loadNoDelivery("ERROR: Unable to reach database. Please check your online connection")
@@ -127,13 +123,11 @@ class CurrentDeliveryFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMark
                 }
             }
         }
-
         cancelbtn.setOnClickListener{
             activity?.findViewById<ConstraintLayout>(R.id.loadingscreenmain)?.visibility = View.VISIBLE
-            vm.index = 0
             vm.updateDelivery("CANCELED",vm.currentorderlist[vm.index].number){
+                vm.index = 0
                 vm.queryDelivery{ callback->
-                    vm.index = 0
                     when (callback){
                         "Delivery Present"->{
                             loadCurrentDelivery(vm.index)
@@ -177,29 +171,23 @@ class CurrentDeliveryFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMark
     }
 
     fun loadCurrentDelivery(i:Int){
-        //activity?.findViewById<ConstraintLayout>(R.id.loadingscreenmain)?.visibility = View.VISIBLE
         mainlayout.visibility = View.VISIBLE
         notificationlayout.visibility = View.GONE
 
         val order = vm.currentorderlist[i]
 
         number.text = order.number
-
         menuitemsholder.removeAllViews()
         for (u in 0 until order.itemlist.size){
             val menuitemstext = layoutInflater.inflate(R.layout.menuitemstext, null)
             menuitemstext.desc.text = order.itemlist[u]
             menuitemsholder.addView(menuitemstext)
         }
-
         address.text = order.address
-
         phonenumber.text = order.phonenumber
-
         phonebtn.setOnClickListener{
             callCustomerDialog(i)
         }
-
         cardView.setOnClickListener{
             if (hiddenlayout.visibility == View.GONE) {
                 TransitionManager.beginDelayedTransition(
@@ -298,7 +286,7 @@ class CurrentDeliveryFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMark
                                 include(userLoc)
                                 include(destiLoc)
                             }.build()
-                            val cameraupdate = CameraUpdateFactory.newLatLngBounds(builder, 50)
+                            val cameraupdate = CameraUpdateFactory.newLatLngBounds(builder, 100)
                             map.animateCamera(cameraupdate)
 
 
@@ -321,19 +309,6 @@ class CurrentDeliveryFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMark
         }
 
     }
-
-
-
-
-
-
-    override fun onMarkerClick(p0: Marker?): Boolean {
-        TODO("Not yet implemented")
-    }
-
-
-
-
 
 }
 

@@ -6,11 +6,9 @@
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/nav_currentdelivery"
-            android:icon="@drawable/ic_menu_gallery"
             android:title="Current Delivery" />
         <item
             android:id="@+id/nav_pendingdelivery"
-            android:icon="@drawable/ic_menu_slideshow"
             android:title="Pending Delivery" />
     </group>
 </menu>
