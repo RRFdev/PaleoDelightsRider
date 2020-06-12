@@ -1,5 +1,6 @@
 package com.rrdsolutions.paleodelightsrider
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -20,6 +21,7 @@ import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.navigation.NavigationView
 import com.google.firebase.FirebaseApp
 import com.google.gson.Gson
+import com.pddstudio.preferences.encrypted.EncryptedPreferences
 import com.rrdsolutions.paleodelightsrider.ui.login.LoginActivity
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
@@ -30,11 +32,7 @@ class MainActivity : AppCompatActivity() {
     lateinit var appBarConfiguration: AppBarConfiguration
     var username = ""
 
-    data class Logindetails(
-        val username:String,
-        val password:String
-    )
-
+    @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -65,9 +63,6 @@ class MainActivity : AppCompatActivity() {
         navView.getHeaderView(0).findViewById<TextView>(R.id.loggedintext)
             .text = "Logged in as $username"
 
-
-
-
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -82,9 +77,10 @@ class MainActivity : AppCompatActivity() {
 
     fun logout(){
 
-        val emptylogin = Logindetails("", "")
-        val file = File(this.filesDir.path.toString() + "logindetails")
-        file.writeText(Gson().toJson(emptylogin))
+        val ep = EncryptedPreferences.Builder(applicationContext)
+            .withEncryptionPassword("432fdsfds3ll4")
+            .build()
+        ep.forceDeleteExistingPreferences()
 
         val intent = Intent(this, LoginActivity::class.java)
         intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY or Intent.FLAG_ACTIVITY_CLEAR_TOP)

@@ -14,6 +14,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.google.firebase.FirebaseApp
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.gson.Gson
+import com.pddstudio.preferences.encrypted.EncryptedPreferences
 import com.rrdsolutions.paleodelightsrider.MainActivity
 import com.rrdsolutions.paleodelightsrider.R
 import com.tozny.crypto.android.AesCbcWithIntegrity
@@ -26,28 +27,24 @@ import javax.crypto.SecretKey
 
 
 class LoginActivity : AppCompatActivity() {
-    lateinit var vm: LoginViewModel
 
+    lateinit var vm: LoginViewModel
+    lateinit var ep: EncryptedPreferences
     var username = ""
     var password = ""
-
-    data class Logindetails(
-        val username:String,
-        val password:String
-    )
-
-    data class Logindetails2(
-        val username: String,
-
-        val encryptedpassword: String,
-        val key: SecretKeys
-    )
 
     @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        Log.d("_login", "ONCREATE")
+
         setContentView(R.layout.activity_login)
         FirebaseApp.initializeApp(this)
+
+        ep = EncryptedPreferences.Builder(applicationContext)
+            .withEncryptionPassword("432fdsfds3ll4")
+            .build()
 
         vm = ViewModelProvider(this).get(LoginViewModel::class.java)
 
@@ -93,6 +90,9 @@ class LoginActivity : AppCompatActivity() {
 
     override fun onResume(){
         super.onResume()
+
+        Log.d("_login", "ONRESUME")
+
         vm.visibility.value = View.GONE
         vm.visibility.observe(this, Observer{
             loadingscreen.visibility = it
@@ -103,46 +103,23 @@ class LoginActivity : AppCompatActivity() {
 
     override fun onBackPressed() {
         super.onBackPressed()
-
-        val a = Intent(Intent.ACTION_MAIN)
-        a.addCategory(Intent.CATEGORY_HOME)
-        a.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-
-        this.startActivity(a)
+        finishAffinity()
     }
 
-    private fun checkLogin(){
-
-        //decrypt here
-
-
-        val file = File(this.filesDir.path.toString() + "logindetails")
-        if (file.exists()) {
-           val logindetails = Gson().fromJson(file.readText(), Logindetails::class.java)
-           username = logindetails.username
-           password = logindetails.password
-        }
+    fun checkLogin(){
+        username = ep.getString("username", "")
+        password = ep.getString("password", "")
         if (username !="" && password !="") toMainActivity()
     }
 
-    private fun saveLogin(){
-        val file = File(this.filesDir.path.toString() + "logindetails")
-
-        val savedlogin = Logindetails(username, password)
-        file.writeText(Gson().toJson(savedlogin))
-
-        //encrypt here
-
-        //val savedlogin = encrypt()
-        //file.writeText(encryptSavedLogin())
-
-        //encryptedlogin = ""
-        //file.writeText(encryptedlogin)
-
-
+    fun saveLogin(){
+        ep.edit()
+            .putString("username", username)
+            .putString("password", password)
+            .apply()
     }
 
-    private fun toMainActivity(){
+    fun toMainActivity(){
         username_edt.setText("")
         password_edt.setText("")
 
@@ -151,24 +128,6 @@ class LoginActivity : AppCompatActivity() {
         }
         startActivity(intent)
         Log.d("_login", "moving to MainActivity")
-    }
-
-    fun encryptSavedLogin(): String{
-        val key = generateKeyFromPassword(password, saltString(generateSalt()))
-        val encryptedpassword = encrypt(password, key).toString()
-        val logindetails2 = Logindetails2(username, encryptedpassword, key)
-        val result = Gson().toJson(logindetails2)
-
-        return result
-    }
-
-    fun decrypt(string:String){
-        val logindetails2 = Gson().fromJson(string, Logindetails2::class.java)
-        val encryptedpassword = logindetails2.encryptedpassword
-        val key = logindetails2.key
-        password = decryptString(CipherTextIvMac(encryptedpassword), key)
-        username = logindetails2.username
-
     }
 
 }
