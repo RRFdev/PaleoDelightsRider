@@ -7,25 +7,13 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Toast
-import androidx.core.graphics.toColorInt
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.google.firebase.FirebaseApp
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.gson.Gson
 import com.pddstudio.preferences.encrypted.EncryptedPreferences
 import com.rrdsolutions.paleodelightsrider.MainActivity
 import com.rrdsolutions.paleodelightsrider.R
-import com.tozny.crypto.android.AesCbcWithIntegrity
-import com.tozny.crypto.android.AesCbcWithIntegrity.*
 import kotlinx.android.synthetic.main.activity_login.*
-import java.io.File
-import java.security.SecureRandom
-import javax.crypto.KeyGenerator
-import javax.crypto.SecretKey
-
-
 class LoginActivity : AppCompatActivity() {
 
     lateinit var vm: LoginViewModel
