@@ -296,7 +296,6 @@ class CurrentDeliveryFragment : Fragment(), OnMapReadyCallback {
                 val locationRequest = LocationRequest.create().apply{
                     priority = LocationRequest.PRIORITY_HIGH_ACCURACY
                     interval = (10 * 1000).toLong()
-                    //fastestInterval = (2 * 1000).toLong()
                 }
 
                 fusedLocationClient.requestLocationUpdates(locationRequest,

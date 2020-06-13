@@ -223,7 +223,7 @@ class PendingDeliveryFragment : Fragment(){
             Log.d("_pending", "coordinate = " + coordinate)
             locationFound(true)
         }
-        //coordinate = LatLng (0.0, 0.0)
+
     }
 
     fun callCustomerDialog(i:Int){
