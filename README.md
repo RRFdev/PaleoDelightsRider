@@ -7,7 +7,9 @@ This is a demo app for delivery riders, meant to be used together with [Paleo De
 
 2. [Firebase Firestore](https://firebase.google.com/docs/firestore) for logging in of registered riders as well as querying and updating delivery orders.
 
-3. Navigation Drawer template as provided by Android Studio. 
+3. [EncryptedPreferences](https://github.com/PDDStudio/EncryptedPreferences) for encrypting login details.
+
+4. Navigation Drawer template as provided by Android Studio. 
 
 ## Walkthrough 
 
