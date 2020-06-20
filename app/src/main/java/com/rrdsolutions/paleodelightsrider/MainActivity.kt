@@ -38,9 +38,6 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         val toolbar: Toolbar = findViewById(R.id.toolbarmain)
         setSupportActionBar(toolbar)
-        loadingscreenmain.visibility = View.GONE
-        Log.d("_TEST", "in main")
-        FirebaseApp.initializeApp(this)
 
         val drawerLayout: DrawerLayout = findViewById(R.id.drawer)
         val navView: NavigationView = findViewById(R.id.nav_view)
@@ -56,7 +53,6 @@ class MainActivity : AppCompatActivity() {
 
         navView.getHeaderView(0).findViewById<TextView>(R.id.logouttext)
             .setOnClickListener{
-            Log.d("_main", "clicked")
                 logout()
         }
         val username = intent.getStringExtra("username") as String
@@ -83,9 +79,8 @@ class MainActivity : AppCompatActivity() {
         ep.forceDeleteExistingPreferences()
 
         val intent = Intent(this, LoginActivity::class.java)
-        intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY or Intent.FLAG_ACTIVITY_CLEAR_TOP)
         startActivity(intent)
-
+        finish()
     }
 
 }

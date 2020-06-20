@@ -11,6 +11,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.google.firebase.FirebaseApp
 import com.pddstudio.preferences.encrypted.EncryptedPreferences
+import com.rrdsolutions.paleodelightsrider.LoginResult
 import com.rrdsolutions.paleodelightsrider.MainActivity
 import com.rrdsolutions.paleodelightsrider.R
 import kotlinx.android.synthetic.main.activity_login.*
@@ -24,69 +25,51 @@ class LoginActivity : AppCompatActivity() {
     @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        Log.d("_login", "ONCREATE")
-
         setContentView(R.layout.activity_login)
-        FirebaseApp.initializeApp(this)
 
         ep = EncryptedPreferences.Builder(applicationContext)
             .withEncryptionPassword("432fdsfds3ll4")
             .build()
-
         vm = ViewModelProvider(this).get(LoginViewModel::class.java)
-
+        checkLogin()
         loginbutton.setOnClickListener{
 
             vm.visibility.value = View.VISIBLE
 
             username = username_edt.text.toString()
             password = password_edt.text.toString()
-            Log.d("_login", "username = $username, password = $password")
 
             vm.loginWith(username, password){ callback->
                 when (callback){
-                    "login success"->{
-                        Log.d("_login", "login success")
+                    LoginResult.LOGIN_SUCCESS->{
                         if (checkbox.isChecked) saveLogin()
                         toMainActivity()
                     }
-                    "password incorrect"->{
-                        Log.d("_login", "password incorrect")
+                    LoginResult.PASSWORD_INCORRECT->{
                         Toast.makeText(this, "Error: Password incorrect",
                             Toast.LENGTH_LONG).show()
                         vm.visibility.value = View.GONE
                     }
-                    "username incorrect"->{
-                        Log.d("_login", "username incorrect")
+                    LoginResult.USERNAME_INCORRECT->{
                         Toast.makeText(this, "Error: Username incorrect",
                             Toast.LENGTH_LONG).show()
                         vm.visibility.value = View.GONE
                     }
-                    "login fail"->{
-                        Log.d("_login", "login fail")
+                    LoginResult.LOGIN_FAIL->{
                         Toast.makeText(this, "Login failed. Please check your internet connection and try again.",
                         Toast.LENGTH_LONG).show()
                         vm.visibility.value = View.GONE
                     }
                 }
-
             }
         }
 
-    }
-
-    override fun onResume(){
-        super.onResume()
-
-        Log.d("_login", "ONRESUME")
-
-        vm.visibility.value = View.GONE
         vm.visibility.observe(this, Observer{
             loadingscreen.visibility = it
         })
 
-        checkLogin()
+
+
     }
 
     override fun onBackPressed() {
@@ -115,7 +98,6 @@ class LoginActivity : AppCompatActivity() {
             putExtra("username", username)
         }
         startActivity(intent)
-        Log.d("_login", "moving to MainActivity")
     }
 
 }
