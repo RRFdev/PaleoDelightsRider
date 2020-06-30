@@ -21,6 +21,7 @@ import androidx.appcompat.widget.Toolbar
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.transition.AutoTransition
 import androidx.transition.Fade
@@ -35,10 +36,28 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
+import com.rrdsolutions.paleodelightsrider.QResult
 import com.rrdsolutions.paleodelightsrider.R
 
 import kotlinx.android.synthetic.main.fragment_currentdelivery.*
 import kotlinx.android.synthetic.main.menuitemstext.view.*
+
+import androidx.lifecycle.observe
+import kotlinx.android.synthetic.main.fragment_currentdelivery.address
+import kotlinx.android.synthetic.main.fragment_currentdelivery.cardView
+import kotlinx.android.synthetic.main.fragment_currentdelivery.dotbutton
+import kotlinx.android.synthetic.main.fragment_currentdelivery.expandimage
+import kotlinx.android.synthetic.main.fragment_currentdelivery.hiddenlayout
+import kotlinx.android.synthetic.main.fragment_currentdelivery.leftbutton
+import kotlinx.android.synthetic.main.fragment_currentdelivery.mainlayout
+import kotlinx.android.synthetic.main.fragment_currentdelivery.menuitemsholder
+import kotlinx.android.synthetic.main.fragment_currentdelivery.notificationlayout
+import kotlinx.android.synthetic.main.fragment_currentdelivery.notificationtext
+import kotlinx.android.synthetic.main.fragment_currentdelivery.number
+import kotlinx.android.synthetic.main.fragment_currentdelivery.phonebtn
+import kotlinx.android.synthetic.main.fragment_currentdelivery.phonenumber
+import kotlinx.android.synthetic.main.fragment_currentdelivery.rightbutton
+import kotlinx.android.synthetic.main.fragment_pendingdelivery.*
 
 class CurrentDeliveryFragment : Fragment(), OnMapReadyCallback {
 
@@ -57,39 +76,41 @@ class CurrentDeliveryFragment : Fragment(), OnMapReadyCallback {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        vm.setUsernameValue(activity?.intent?.getStringExtra("username") as String)
 
-        vm.username = activity?.intent?.getStringExtra("username") as String
-        Log.d("_currentdelivery", "username = $vm.username")
+        vm.setIndexValue(vm.index.value!!)
+
+        vm.queryDelivery{ callback->
+            when (callback){
+                QResult.DELIVERY_PRESENT->{
+                    if (getView()!=null){
+                        vm.index.observe(viewLifecycleOwner){
+                            if (vm.list.size>0){
+                                loadCurrentDelivery(it)
+                            }
+                        }
+                    }
+                }
+                QResult.NO_DELIVERY->loadNoDelivery("No deliveries at the moment")
+                QResult.NO_CONNECTION->loadNoDelivery("ERROR: Unable to reach database. Please check your online connection")
+            }
+        }
 
         leftbutton.setOnClickListener{
-            activity?.findViewById<ConstraintLayout>(R.id.loadingscreenmain)?.visibility = View.VISIBLE
-            if (vm.index != 0) {
-                vm.index--
-            }
-            else {
-                vm.index = vm.currentorderlist.size-1
-            }
-            loadCurrentDelivery(vm.index)
+            vm.decreaseIndex()
         }
-        rightbutton.setOnClickListener{
-            activity?.findViewById<ConstraintLayout>(R.id.loadingscreenmain)?.visibility = View.VISIBLE
-            if (vm.index == (vm.currentorderlist.size-1)){
-                vm.index = 0
 
-            }
-            else {
-                vm.index++
-            }
-            loadCurrentDelivery(vm.index)
+        rightbutton.setOnClickListener{
+            vm.increaseIndex()
         }
+
         dotbutton.setOnClickListener{
 
             fun menuClicked(i:Int):MenuItem.OnMenuItemClickListener{
                 val onclick = MenuItem.OnMenuItemClickListener {
                     when (it.title){
-                        vm.currentorderlist[i].number->{
-                            activity?.findViewById<ConstraintLayout>(R.id.loadingscreenmain)?.visibility = View.VISIBLE
-                            loadCurrentDelivery(i)
+                        vm.list[i].number->{
+                            vm.setIndexValue(i)
                         }
                     }
                     true
@@ -98,45 +119,41 @@ class CurrentDeliveryFragment : Fragment(), OnMapReadyCallback {
             }
             val popupMenu = PopupMenu(requireContext(),dotbutton)
 
-            for (i in 0 until vm.currentorderlist.size){
+            for (i in 0 until vm.list.size){
                 popupMenu.menu
-                    .add(vm.currentorderlist[i].number)
+                    .add(vm.list[i].number)
                     .setOnMenuItemClickListener(menuClicked(i))
             }
-            Log.d("_current", "dot button clicked")
             popupMenu.show()
         }
+
         deliverbtn.setOnClickListener{
-            activity?.findViewById<ConstraintLayout>(R.id.loadingscreenmain)?.visibility = View.VISIBLE
-            vm.updateDelivery("DELIVERED",vm.currentorderlist[vm.index].number){
-                vm.index = 0
-                vm.queryDelivery{ callback->
-                    when (callback){
-                        "Delivery Present"->{
-                            loadCurrentDelivery(vm.index)
-                            Toast.makeText(this.context as Activity, vm.currentorderlist[vm.index].number+ " delivered", Toast.LENGTH_SHORT)
-                                .show()
-                        }
-                        "No Delivery"->loadNoDelivery("No deliveries at the moment")
-                        "No Connection"->loadNoDelivery("ERROR: Unable to reach database. Please check your online connection")
-                    }
+            val DELIVERED = "DELIVERED"
+            val ordernumber = vm.list[vm.index.value!!].number
+
+            vm.updateDelivery(DELIVERED, ordernumber){taskCompleted->
+                if (taskCompleted){
+                    Toast.makeText(this.context as Activity, ordernumber + " delivered", Toast.LENGTH_SHORT)
+                        .show()
+                }
+                else {
+                    Toast.makeText(this.context as Activity, "Delivery update failed. Please check your online connection and retry.", Toast.LENGTH_SHORT).show()
                 }
             }
         }
+
         cancelbtn.setOnClickListener{
-            activity?.findViewById<ConstraintLayout>(R.id.loadingscreenmain)?.visibility = View.VISIBLE
-            vm.updateDelivery("CANCELED",vm.currentorderlist[vm.index].number){
-                vm.index = 0
-                vm.queryDelivery{ callback->
-                    when (callback){
-                        "Delivery Present"->{
-                            loadCurrentDelivery(vm.index)
-                            Toast.makeText(this.context as Activity, vm.currentorderlist[vm.index].number+ " canceled", Toast.LENGTH_SHORT)
-                                .show()
-                        }
-                        "No Delivery"->loadNoDelivery("No deliveries at the moment")
-                        "No Connection"->loadNoDelivery("ERROR: Unable to reach database. Please check your online connection")
-                    }
+            val CANCELED = "CANCELED"
+            val ordernumber = vm.list[vm.index.value!!].number
+
+            vm.updateDelivery(CANCELED, ordernumber){taskCompleted->
+
+                if (taskCompleted){
+                    Toast.makeText(this.context as Activity, ordernumber + " canceled", Toast.LENGTH_SHORT)
+                        .show()
+                }
+                else {
+                    Toast.makeText(this.context as Activity, "Delivery update failed. Please check your online connection and retry.", Toast.LENGTH_SHORT).show()
                 }
             }
         }
@@ -145,75 +162,70 @@ class CurrentDeliveryFragment : Fragment(), OnMapReadyCallback {
         notificationlayout.visibility = View.GONE
     }
 
-    override fun onPause(){
+    override fun onPause() {
         super.onPause()
-    }
-
-    override fun onResume(){
-        super.onResume()
-        activity?.findViewById<ConstraintLayout>(R.id.loadingscreenmain)?.visibility = View.VISIBLE
-
-        vm.queryDelivery(){ callback->
-            when (callback){
-                "Delivery Present"-> loadCurrentDelivery(vm.index)
-                "No Delivery"->loadNoDelivery("No deliveries at the moment")
-                "No Connection"->loadNoDelivery("ERROR: Unable to reach database. Please check your online connection")
-            }
-        }
+        //gets rid of Parcel: unable to marshal value errors
+        vm.setListValue(ArrayList())
     }
 
     fun loadNoDelivery(text:String){
+        if (mainlayout!=null && notificationlayout!=null) {
+            notificationtext.text = text
 
-        mainlayout.visibility = View.GONE
-        notificationlayout.visibility = View.VISIBLE
-        notificationtext.text = text
-        activity?.findViewById<ConstraintLayout>(R.id.loadingscreenmain)?.visibility = View.GONE
+            mainlayout.visibility = View.GONE
+            notificationlayout.visibility = View.VISIBLE
+        }
     }
 
     fun loadCurrentDelivery(i:Int){
-        mainlayout.visibility = View.VISIBLE
-        notificationlayout.visibility = View.GONE
+        if (mainlayout!=null && notificationlayout!=null) {
+            mainlayout.visibility = View.VISIBLE
+            notificationlayout.visibility = View.GONE
 
-        val order = vm.currentorderlist[i]
+            val order = vm.list[i]
 
-        number.text = order.number
-        menuitemsholder.removeAllViews()
-        for (u in 0 until order.itemlist.size){
-            val menuitemstext = layoutInflater.inflate(R.layout.menuitemstext, null)
-            menuitemstext.desc.text = order.itemlist[u]
-            menuitemsholder.addView(menuitemstext)
-        }
-        address.text = order.address
-        phonenumber.text = order.phonenumber
-        phonebtn.setOnClickListener{
-            callCustomerDialog(i)
-        }
-        cardView.setOnClickListener{
-            if (hiddenlayout.visibility == View.GONE) {
-                TransitionManager.beginDelayedTransition(
-                    cardView as ViewGroup,
-                    AutoTransition()
-                )
-                hiddenlayout.visibility = View.VISIBLE
-                expandimage.animate().rotation(180f).start()
-            } else {
-                TransitionManager.beginDelayedTransition(
-                    cardView as ViewGroup,
-                    Fade().setDuration(300)
-                )
-                hiddenlayout.visibility = View.GONE
-                expandimage.animate().rotation(0f).start()
+            number.text = order.number
+
+            menuitemsholder.removeAllViews()
+            for (u in 0 until order.itemlist.size){
+                val menuitemstext = layoutInflater.inflate(R.layout.menuitemstext, null)
+                menuitemstext.desc.text = order.itemlist[u]
+                menuitemsholder.addView(menuitemstext)
             }
-        }
+            address.text = order.address
+            phonenumber.text = order.phonenumber
+            phonebtn.setOnClickListener{
+                callCustomerDialog(i)
+            }
 
-        getCoordinate(order.address){
-            destiLoc = it
-            val mapFragment =childFragmentManager.findFragmentById(R.id.cmap) as SupportMapFragment
-            mapFragment.getMapAsync(this)
-            fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity().baseContext)
-            activity?.findViewById<ConstraintLayout>(R.id.loadingscreenmain)?.visibility = View.GONE
-        }
+            cardView.setOnClickListener{
+                if (hiddenlayout.visibility == View.GONE) {
+                    TransitionManager.beginDelayedTransition(
+                        cardView as ViewGroup,
+                        AutoTransition()
+                    )
+                    hiddenlayout.visibility = View.VISIBLE
+                    expandimage.animate().rotation(180f).start()
+                } else {
+                    TransitionManager.beginDelayedTransition(
+                        cardView as ViewGroup,
+                        Fade().setDuration(300)
+                    )
+                    hiddenlayout.visibility = View.GONE
+                    expandimage.animate().rotation(0f).start()
+                }
+            }
 
+            getCoordinate(order.address){
+                destiLoc = it
+                val mapFragment =childFragmentManager.findFragmentById(R.id.cmap) as SupportMapFragment
+                mapFragment.getMapAsync(this)
+                fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity().baseContext)
+            }
+
+            mainlayout.visibility = View.VISIBLE
+            notificationlayout.visibility = View.GONE
+        }
     }
 
     fun getCoordinate(address:String, callback:(LatLng)->Unit){
@@ -238,7 +250,7 @@ class CurrentDeliveryFragment : Fragment(), OnMapReadyCallback {
             startActivity(callIntent)
         }
 
-        val phonenumber = vm.currentorderlist[i].phonenumber
+        val phonenumber = vm.list[i].phonenumber
         MaterialDialog(this.context as Activity).show {
             title(text = "Call confirmation")
             message(text = "Call customer at $phonenumber directly?")
@@ -263,13 +275,9 @@ class CurrentDeliveryFragment : Fragment(), OnMapReadyCallback {
             && ActivityCompat.checkSelfPermission(this.context as Activity, Manifest.permission.ACCESS_COARSE_LOCATION)
             != PackageManager.PERMISSION_GRANTED) {
 
-            Log.d("maptest", "User permission not granted")
-
             return
         }
         else {
-            Log.d("maptest", "User permission granted")
-
             map.isMyLocationEnabled = true
             //adds rider location
             fun startLocationUpdates() {
@@ -286,10 +294,8 @@ class CurrentDeliveryFragment : Fragment(), OnMapReadyCallback {
                                 include(userLoc)
                                 include(destiLoc)
                             }.build()
-                            val cameraupdate = CameraUpdateFactory.newLatLngBounds(builder, 100)
+                            val cameraupdate = CameraUpdateFactory.newLatLngBounds(builder, 50)
                             map.animateCamera(cameraupdate)
-
-
                         }
                     }
                 }
@@ -304,7 +310,6 @@ class CurrentDeliveryFragment : Fragment(), OnMapReadyCallback {
 
             }
             startLocationUpdates()
-            
         }
 
     }
